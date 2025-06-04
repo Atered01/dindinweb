@@ -1,0 +1,8 @@
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-JWT-Extended
+python-dotenv
+PyMySQL
+
+#pip install Flask Flask-SQLAlchemy Flask-Migrate Flask-JWT-Extended python-dotenv PyMySQL
