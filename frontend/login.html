@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login de Usuário</title>
-  <link rel="stylesheet" href="/frontend/styles.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
@@ -24,11 +24,11 @@
     </form>
     <div id="message"></div>
     <div class="info-link">
-      <p>Não tem uma conta? <a href="/frontend/cadastro.html">Registre-se aqui</a></p>
+      <p>Não tem uma conta? <a href="{{ url_for('index_page') }}">Registre-se aqui</a></p>
     </div>
   </div>
 
-  <script src="/frontend/script.js" defer></script>
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
 </body>
 
 </html>
