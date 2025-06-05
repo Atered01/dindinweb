@@ -1,4 +1,3 @@
-// static/js/login_script.js
 document.addEventListener('DOMContentLoaded', function() {
     console.log("login_script.js carregado e DOM pronto!"); // Para depuração
 
@@ -6,10 +5,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const messageDiv = document.getElementById('message');
 
     if (loginForm) {
-        console.log("Formulário #loginForm encontrado. Adicionando listener..."); // Para depuração
+        console.log("Formulário #loginForm encontrado. Adicionando listener...");
         loginForm.addEventListener('submit', async function(event) {
-            event.preventDefault(); // ESSENCIAL para impedir o envio padrão
-            console.log("Envio do formulário interceptado pelo JS!"); // Para depuração
+            event.preventDefault();
+            console.log("Envio do formulário interceptado pelo JS!");
 
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
@@ -19,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 senha: senha
             };
 
-            const apiUrl = 'http://127.0.0.1:5000/auth/login'; // Sua API de login
+            const apiUrl = 'http://127.0.0.1:5000/auth/login';
 
             if(messageDiv) {
                 messageDiv.innerHTML = '';
@@ -46,8 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                         loginForm.reset();
                         alert('Login realizado com sucesso! Token armazenado.');
-                        // Opcional: Redirecionar
-                        // window.location.href = '/alguma-pagina-protegida.html';
                     } else {
                         if(messageDiv) {
                             messageDiv.textContent = result.msg || 'Token não encontrado na resposta.';
