@@ -21,6 +21,10 @@ def create_app():
     @app.route("/login")
     def login_page():
         return render_template("login.html")
+    
+    @app.route("/meus-pontos")
+    def pontos_usuario_page():
+        return render_template("pontos.html")
 
     from routes.auth import auth_bp 
     from routes.embalagens import embalagens_bp 

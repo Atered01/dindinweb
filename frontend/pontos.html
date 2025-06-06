@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Pontos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pontos_style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Meus Pontos</h2>
+        <div class="pontos-display">
+            <span id="user-points">...</span>
+            <small>Pontos</small>
+        </div>
+        <div id="message"></div>
+        <button id="logout-button">Sair (Logout)</button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/pontos_script.js') }}" defer></script>
+</body>
+
+</html>
