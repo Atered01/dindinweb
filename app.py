@@ -13,6 +13,8 @@ def create_app():
     CORS(app)
     jwt.init_app(app) 
 
+    
+
     @app.route("/")
     def index_page(): # Renomeei a função para evitar conflito com a global index se houvesse
         return render_template("cadastro.html")
@@ -22,9 +24,23 @@ def create_app():
     def login_page():
         return render_template("login.html")
     
+    
     @app.route("/meus-pontos")
     def pontos_usuario_page():
         return render_template("pontos.html")
+    
+    
+    
+    @app.route("/ranking")
+    def ranking_page():
+        return render_template("ranking.html")
+    
+    # @app.route("/teste-simples")
+    # def rota_de_teste():
+    #     return "A rota de teste SIMPLES está funcionando!"
+    # # --- FIM DO BLOCO DE TESTE ---
+
+    # return app
 
     from routes.auth import auth_bp 
     from routes.embalagens import embalagens_bp 

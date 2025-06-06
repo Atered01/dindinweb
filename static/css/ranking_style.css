@@ -1,0 +1,68 @@
+/* static/css/ranking_style.css */
+body {
+    font-family: sans-serif;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background-color: #fff;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 25px;
+}
+
+.ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.ranking-table thead th {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.ranking-table tbody td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.ranking-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.ranking-table tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+#message {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.nav-link {
+    display: inline-block;
+    margin-top: 25px;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}

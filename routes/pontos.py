@@ -92,3 +92,29 @@ def add_user_score():
     finally:
         if cursor: cursor.close()
         if conn: conn.close()
+
+@pontos_bp.route('/ranking', methods=['GET'])
+@jwt_required()
+def get_ranking():
+    """
+    Retorna o ranking de usuários ordenado por pontuação decrescente.
+    """
+    conn = None
+    cursor = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        sql = "SELECT nome, pontuacao FROM usuarios ORDER BY pontuacao DESC LIMIT 100"
+        cursor.execute(sql)
+        ranking = cursor.fetchall()
+
+        return jsonify(ranking), 200
+
+    except pymysql.MySQLError as e:
+        print(f"Erro ao buscar ranking: {e}")
+        return jsonify({"msg": "Erro ao buscar ranking."}), 500
+    finally:
+        if cursor: cursor.close()
+        if conn: conn.close()
+        

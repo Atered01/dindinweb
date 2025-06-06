@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking de Pontuações</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ranking_style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Ranking de Usuários</h2>
+        <div id="message"></div>
+        <table class="ranking-table">
+            <thead>
+                <tr>
+                    <th>Posição</th>
+                    <th>Nome do Usuário</th>
+                    <th>Pontuação</th>
+                </tr>
+            </thead>
+            <tbody id="ranking-body">
+            </tbody>
+        </table>
+        <a href="/meus-pontos" class="nav-link">Ver Meus Pontos</a>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/ranking_script.js') }}" defer></script>
+</body>
+
+</html>
