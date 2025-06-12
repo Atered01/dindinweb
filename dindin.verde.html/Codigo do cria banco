@@ -1,0 +1,22 @@
+Coloque os arquivos no htdocs do Xampp
+Depois para acessar:
+http://localhost/Dindinweb../templates/homeSemLogin.php
+
+Novo banco de dados sendo usado por hora, sera adicionado mais tabela
+-- Apagar a tabela antiga
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    senha_hash VARCHAR(255) NOT NULL,
+    CPF VARCHAR(14) NOT NULL,
+    logradouro VARCHAR(255) NULL,
+    numero VARCHAR(20) NULL,
+    bairro VARCHAR(100) NULL,
+    cidade VARCHAR(100) NULL,
+    estado VARCHAR(2) NULL,
+    cep VARCHAR(10) NULL,
+    telefone VARCHAR(20) NULL,
+    pontuacao INT DEFAULT 0,
+    data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
+);
