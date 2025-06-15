@@ -1,10 +1,10 @@
 <?php
 session_start();
-// Inclui o config.php e o helpers.php no topo
+// Inclui o config.php e helpers no topo
 require_once('../PHP/config.php');
 require_once('../PHP/helpers.php');
 
-// O "guarda" de segurança que garante que o usuário está logado
+// O "guarda" de segurança
 if (!isset($_SESSION['usuario_id'])) { 
     header('Location: ' . BASE_URL . '/templates/login.php'); 
     exit(); 
@@ -12,8 +12,8 @@ if (!isset($_SESSION['usuario_id'])) {
 
 // --- Busca os dados do perfil do banco de dados ---
 try {
-    // A consulta com LEFT JOIN busca todos os dados necessários de uma só vez
-    $sql = "SELECT u.id_personalizado, u.data_cadastro, e.* FROM usuarios u
+    // A consulta agora usa u.id para a junção e o filtro
+    $sql = "SELECT u.id_personalizado, u.data_cadastro, u.foto_perfil, e.* FROM usuarios u
             LEFT JOIN estatisticas_usuario e ON u.id = e.id_usuario
             WHERE u.id = :id_usuario";
     
@@ -21,16 +21,17 @@ try {
     $stmt->execute([':id_usuario' => $_SESSION['usuario_id']]);
     $usuario_completo = $stmt->fetch();
 
-    // Se o LEFT JOIN não encontrou correspondência em 'estatisticas_usuario', 
-    // mescla com um array de valores padrão para não dar erro na página.
-    if (!$usuario_completo || !isset($usuario_completo['id_usuario'])) {
-        $stmt_user = $pdo->prepare("SELECT id_personalizado, data_cadastro FROM usuarios WHERE id = :id_usuario");
+    if (!$usuario_completo) {
+        $stmt_user = $pdo->prepare("SELECT id_personalizado, data_cadastro, foto_perfil FROM usuarios WHERE id = :id_usuario");
         $stmt_user->execute([':id_usuario' => $_SESSION['usuario_id']]);
         $usuario_base = $stmt_user->fetch();
+        // Cria um array com valores padrão para não dar erro na página
         $usuario_completo = array_merge($usuario_base, [
             'itens_reciclados' => 0,
             'mercados_visitados' => 0,
             'meses_consecutivos' => 0,
+            'nivel' => 'Reciclador Iniciante',
+            'progresso_nivel' => 0,
             'co2_evitado' => 0,
             'agua_economizada' => 0,
             'energia_poupada' => 0,
@@ -49,7 +50,7 @@ try {
         $mesesComoMembro = 1; 
     }
     
-    // Calcula a pontuação total com base nas estatísticas
+    // A pontuação agora é calculada com base nas estatísticas
     $pontuacao_atual = ($usuario_completo['co2_evitado'] ?? 0) + ($usuario_completo['agua_economizada'] ?? 0) + ($usuario_completo['energia_poupada'] ?? 0);
     $proximoNivelTexto = '';
     // Usa as funções do helpers.php
@@ -78,22 +79,35 @@ try {
     <div class="perfil-container">
         <aside class="perfil-lateral">
             <div class="perfil-header">
-                <div class="perfil-avatar"><i class="fas fa-user"></i></div>
+                <div class="perfil-avatar-upload">
+                    <img src="../PHP/exibir_foto.php" alt="Foto de Perfil" class="perfil-foto">
+                </div>
+                
+                <div class="upload-form">
+                    <form action="../PHP/upload_foto.php" method="post" enctype="multipart/form-data">
+                        <label for="foto" class="btn-upload">Trocar Foto</label>
+                        <input type="file" name="foto_perfil" id="foto" required style="display: none;" onchange="this.form.submit()">
+                    </form>
+                </div>
+
                 <h2><?php echo htmlspecialchars($_SESSION['usuario_nome']); ?></h2>
                 <p>Membro desde <?php echo date('M/Y', strtotime($usuario_completo['data_cadastro'])); ?></p>
             </div>
+            
             <div class="perfil-stats">
                 <div><strong><?php echo htmlspecialchars($usuario_completo['itens_reciclados']); ?></strong><span>Itens</span></div>
                 <div><strong><?php echo htmlspecialchars($usuario_completo['mercados_visitados']); ?></strong><span>Mercados</span></div>
                 <div><strong><?php echo $mesesComoMembro; ?></strong><span>Meses</span></div>
             </div>
-            <div class="perfil-nivel">
+
+            <div class="perfil-nivel" data-pontuacao="<?php echo $pontuacao_atual; ?>">
                 <p>Nível: <strong id="nivel-texto"><?php echo htmlspecialchars($nivel_usuario); ?></strong></p>
                 <div class="progress-bar">
                     <div id="progresso-barra" style="width: <?php echo $progresso_percentual; ?>%;"></div>
                 </div>
                 <small id="progresso-texto"><?php echo htmlspecialchars($proximoNivelTexto); ?></small>
             </div>
+
             <div class="perfil-recompensas">
                 <h3>Minhas Recompensas</h3>
                 <div class="recompensa-item"><i class="fas fa-tag"></i><span><strong>10% de desconto</strong><br>No Mercado Orgânico</span></div>
@@ -133,9 +147,9 @@ try {
                     </div>
                     <hr>
                     <div class="saldo-detalhes">
-                        <div class="saldo-item"><span>Valor disponível: </span><strong><?php echo number_format($usuario_completo['saldo_ddv'], 2, ',', '.'); ?> DDV</strong></div>
-                        <div class="saldo-item"><span>Em processamento: </span><strong><?php echo number_format($usuario_completo['saldo_processamento'], 2, ',', '.'); ?> DDV</strong></div>
-                        <div class="saldo-item"><span>Total acumulado: </span><strong><?php echo number_format($usuario_completo['saldo_total_acumulado'], 2, ',', '.'); ?> DDV</strong></div>
+                        <div class="saldo-item"><span>Valor disponível</span><strong><?php echo number_format($usuario_completo['saldo_ddv'], 2, ',', '.'); ?> DDV</strong></div>
+                        <div class="saldo-item"><span>Em processamento</span><strong><?php echo number_format($usuario_completo['saldo_processamento'], 2, ',', '.'); ?> DDV</strong></div>
+                        <div class="saldo-item"><span>Total acumulado</span><strong><?php echo number_format($usuario_completo['saldo_total_acumulado'], 2, ',', '.'); ?> DDV</strong></div>
                     </div>
                 </div>
             </div>
@@ -146,6 +160,7 @@ try {
     
     <script>
         const DADOS_PERFIL = {
+            pontuacao: <?php echo $pontuacao_atual; ?>,
             co2: <?php echo $usuario_completo['co2_evitado'] ?? 0; ?>,
             agua: <?php echo $usuario_completo['agua_economizada'] ?? 0; ?>,
             energia: <?php echo $usuario_completo['energia_poupada'] ?? 0; ?>
