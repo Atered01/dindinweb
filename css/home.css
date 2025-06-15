@@ -858,3 +858,66 @@ section {
     text-align: center;
     color: var(--color-primary-dark);
 }
+
+
+.about-us-section {
+    background-color: var(--color-white);
+}
+
+.about-us-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.about-us-text p {
+    color: var(--color-text-light);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+.sdg-title {
+    text-align: center;
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--color-text-dark);
+    margin-bottom: 2rem;
+}
+
+.sdg-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.sdg-grid img {
+    max-width: 100%;
+    border-radius: var(--border-radius);
+}
+
+.sdg-main-card {
+    grid-column: span 2; /* Ocupa as duas colunas */
+    background-color: #004987; /* Cor azul da ONU */
+    color: var(--color-white);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.sdg-main-card h4 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Ajustes para telas maiores */
+@media (min-width: 1024px) {
+    .sdg-grid {
+        grid-template-columns: 1fr 1fr 2fr 1fr 1fr; /* Layout complexo para alinhar como na imagem */
+    }
+    .sdg-main-card {
+        grid-column: 3 / 4; /* Centraliza o card azul */
+        grid-row: 1 / 2;
+    }
+}

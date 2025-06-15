@@ -1,8 +1,8 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
+if (session_status() == PHP_SESSION_NONE) { session_start(); }
+if (!defined('BASE_URL')) {
+    require_once(dirname(__DIR__) . '/PHP/config.php');
 }
-// Pega o nome completo da sessão e extrai o primeiro nome
 $nomeCompleto = $_SESSION['usuario_nome'] ?? 'Usuário';
 $primeiroNome = current(explode(' ', $nomeCompleto));
 ?>
@@ -17,6 +17,7 @@ $primeiroNome = current(explode(' ', $nomeCompleto));
                 <div class="nav-links">
                     <a href="<?php echo BASE_URL; ?>/templates/homeComLogin.php">Início</a>
                     <a href="<?php echo BASE_URL; ?>/templates/pontos_coleta.php">Pontos de Coleta</a>
+                    <a href="<?php echo BASE_URL; ?>/templates/homeComLogin.php#sobre-nos">Sobre Nós</a>
                     <a href="<?php echo BASE_URL; ?>/templates/homeComLogin.php#about">Saiba Mais</a>
                 </div>
             </div>

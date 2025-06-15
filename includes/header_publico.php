@@ -1,3 +1,8 @@
+<?php
+if (!defined('BASE_URL')) {
+    require_once(dirname(__DIR__) . '/PHP/config.php');
+}
+?>
 <header class="main-header">
     <nav class="container">
         <div class="navbar">
@@ -9,6 +14,7 @@
                 <div class="nav-links">
                     <a href="<?php echo BASE_URL; ?>/PHP/index.php">Início</a>
                     <a href="<?php echo BASE_URL; ?>/templates/pontos_coleta.php">Pontos de Coleta</a>
+                    <a href="<?php echo BASE_URL; ?>/templates/homeSemLogin.php#sobre-nos">Sobre Nós</a>
                     <a href="<?php echo BASE_URL; ?>/templates/homeSemLogin.php#how-it-works">Como Funciona</a>
                     <a href="<?php echo BASE_URL; ?>/templates/homeSemLogin.php#about">Saiba Mais</a>
                 </div>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,32 +9,17 @@
     <link rel="stylesheet" href="../css/home.css">
     <link rel="stylesheet" href="../css/saiba-mais.css">
 </head>
+
 <body>
-    <header class="main-header">
-        <nav class="container">
-            <div class="navbar">
-                <div class="nav-left">
-                    <a href="../PHP/index.php" class="logo">
-                        <i class="fas fa-leaf logo-icon"></i>
-                        <span>DinDin Verde</span>
-                    </a>
-                    <div class="nav-links">
-                        <a href="../PHP/index.php" class="active">Início</a>
-                        <a href="pontos_coleta.php">Pontos de Coleta</a>
-                        <a href="#how-it-works">Como Funciona</a>
-                        <a href="#about">Saiba Mais</a>
-                    </div>
-                </div>
-                <div class="nav-right">
-                    <a href="../templates/login.php" class="btn btn-secondary">Login</a>
-                    <a href="../templates/cadastro.php" class="btn btn-primary">Cadastre-se</a>
-                </div>
-            </div>
-        </nav>
-    </header>
+    <?php
+    if (file_exists('../includes/header_publico.php')) {
+        include '../includes/header_publico.php';
+    }
+    ?>
+
     <main>
         <section class="hero-section">
-             <div class="container hero-container">
+            <div class="container hero-container">
                 <div class="hero-text">
                     <h1 class="hero-title">Somos a DinDin Verde!</h1>
                     <p class="hero-subtitle">Startup de impacto que revaloriza as embalagens da sua marca, gera impacto ambiental positivo para o seu negócio e fideliza seus clientes de forma sustentável e divertida!</p>
@@ -43,12 +29,15 @@
                     </div>
                 </div>
                 <div class="hero-image">
-                    <img src="https://images.unsplash.com/photo-1606787366850-de6330128bfc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Pessoas reciclando">
+                    <img src="../img/pessoas_reciclando.png" alt="Pessoas reciclando">
                 </div>
             </div>
         </section>
+
+        <?php include '../includes/sobre_nos_section.php'; ?>
+
         <section class="features-section">
-           <div class="container">
+            <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Nossos Pilares de Atuação</h2>
                     <p class="section-subtitle">Tecnologias inovadoras para um impacto socioambiental positivo</p>
@@ -77,6 +66,9 @@
                 </div>
             </div>
         </section>
+
+
+
         <section id="how-it-works" class="how-it-works-section">
             <div class="container">
                 <div class="section-header">
@@ -108,6 +100,7 @@
             </div>
         </section>
 
+
         <?php include '../includes/saiba_mais_section.php'; ?>
     </main>
 
@@ -115,4 +108,5 @@
 
     <script src="../js/scripts.js"></script>
 </body>
+
 </html>

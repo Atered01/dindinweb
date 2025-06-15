@@ -15,7 +15,7 @@ window.addEventListener('pageshow', function(event) {
     }
 });
 
-
+// Executa o código principal quando o HTML estiver pronto
 document.addEventListener('DOMContentLoaded', function () {
     
     // --- LÓGICA DO DROPDOWN DO USUÁRIO ---
@@ -36,19 +36,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-
-    // --- LÓGICA FINAL E CORRIGIDA: SCROLLSPY E LINK ATIVO ---
+    // --- LÓGICA DE SCROLLSPY E LINK ATIVO ---
     const navLinks = document.querySelectorAll('.nav-links a');
     const sections = document.querySelectorAll('main section[id]');
+    const currentURL = window.location.href;
 
     function updateActiveLink() {
-        let activeSectionId = null;
-        
-        // Determina qual seção está visível na tela
+        let currentSectionId = '';
+
+        // Encontra a seção que está mais proeminente na tela
         sections.forEach(section => {
             const sectionTop = section.offsetTop;
-            if (window.scrollY >= sectionTop - 150) { // O '- 150' ajuda a ativar o link um pouco antes de chegar na seção
-                activeSectionId = section.getAttribute('id');
+            if (window.scrollY >= sectionTop - 150) { // O '- 150' ajuda a ativar o link um pouco antes
+                currentSectionId = section.getAttribute('id');
             }
         });
 
@@ -56,24 +56,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
         navLinks.forEach(link => {
             link.classList.remove('active');
-            // Se encontramos uma seção ativa, e o link aponta para ela, ativamos o link
-            if (activeSectionId && link.href.includes('#' + activeSectionId)) {
+            const linkHref = link.getAttribute('href');
+
+            // Se uma seção está ativa, ativa o link correspondente
+            if (currentSectionId && linkHref.includes('#' + currentSectionId)) {
                 link.classList.add('active');
                 linkWasActivated = true;
             }
         });
 
-        // Se, após verificar todas as seções, nenhum link foi ativado (estamos no topo),
-        // ativamos o link da página principal.
+        // Se, após verificar todas as seções, nenhum link de âncora foi ativado,
+        // ativa o link da página principal.
         if (!linkWasActivated) {
             const currentPageFile = window.location.pathname.split('/').pop() || 'index.php';
             navLinks.forEach(link => {
                 // Ativa o link se ele corresponde à página atual E não é um link para uma seção
-                if (link.href.includes(currentPageFile) && !link.href.includes('#')) {
+                if (link.getAttribute('href').endsWith(currentPageFile) && !link.href.includes('#')) {
                     link.classList.add('active');
-                } else if ((currentPageFile === 'index.php' || currentPageFile === '') && (link.href.includes('homeSemLogin') || link.href.includes('homeComLogin'))) {
-                     if(!link.href.includes('#')){
-                        link.classList.add('active');
+                } else if ((currentPageFile === '' || currentPageFile === 'index.php') && (link.href.includes('homeSemLogin') || link.href.includes('homeComLogin'))) {
+                     if(!link.href.includes('#')) {
+                         link.classList.add('active');
                      }
                 }
             });
@@ -83,6 +85,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Executa a função ao carregar a página e a cada evento de rolagem
     if (navLinks.length > 0) {
         updateActiveLink(); // Executa uma vez no carregamento
-        window.addEventListener('scroll', updateActiveLink); // Executa ao rolar
+        window.addEventListener('scroll', updateActiveLink);
     }
 });
