@@ -12,7 +12,7 @@ if (!isset($_SESSION['usuario_id'])) {
 
 // --- Busca os dados do perfil do banco de dados ---
 try {
-    // A consulta agora usa u.id para a junção e o filtro
+    // A consulta busca todos os dados necessários
     $sql = "SELECT u.id_personalizado, u.data_cadastro, u.foto_perfil, e.* FROM usuarios u
             LEFT JOIN estatisticas_usuario e ON u.id = e.id_usuario
             WHERE u.id = :id_usuario";
@@ -27,17 +27,10 @@ try {
         $usuario_base = $stmt_user->fetch();
         // Cria um array com valores padrão para não dar erro na página
         $usuario_completo = array_merge($usuario_base, [
-            'itens_reciclados' => 0,
-            'mercados_visitados' => 0,
-            'meses_consecutivos' => 0,
-            'nivel' => 'Reciclador Iniciante',
-            'progresso_nivel' => 0,
-            'co2_evitado' => 0,
-            'agua_economizada' => 0,
-            'energia_poupada' => 0,
-            'saldo_ddv' => 0,
-            'saldo_processamento' => 0,
-            'saldo_total_acumulado' => 0
+            'itens_reciclados' => 0, 'mercados_visitados' => 0, 'meses_consecutivos' => 0,
+            'nivel' => 'Reciclador Iniciante', 'progresso_nivel' => 0,
+            'co2_evitado' => 0, 'agua_economizada' => 0, 'energia_poupada' => 0,
+            'saldo_ddv' => 0, 'saldo_processamento' => 0, 'saldo_total_acumulado' => 0
         ]);
     }
 
@@ -82,14 +75,6 @@ try {
                 <div class="perfil-avatar-upload">
                     <img src="../PHP/exibir_foto.php" alt="Foto de Perfil" class="perfil-foto">
                 </div>
-                
-                <div class="upload-form">
-                    <form action="../PHP/upload_foto.php" method="post" enctype="multipart/form-data">
-                        <label for="foto" class="btn-upload">Trocar Foto</label>
-                        <input type="file" name="foto_perfil" id="foto" required style="display: none;" onchange="this.form.submit()">
-                    </form>
-                </div>
-
                 <h2><?php echo htmlspecialchars($_SESSION['usuario_nome']); ?></h2>
                 <p>Membro desde <?php echo date('M/Y', strtotime($usuario_completo['data_cadastro'])); ?></p>
             </div>
@@ -99,15 +84,13 @@ try {
                 <div><strong><?php echo htmlspecialchars($usuario_completo['mercados_visitados']); ?></strong><span>Mercados</span></div>
                 <div><strong><?php echo $mesesComoMembro; ?></strong><span>Meses</span></div>
             </div>
-
-            <div class="perfil-nivel" data-pontuacao="<?php echo $pontuacao_atual; ?>">
+            <div class="perfil-nivel">
                 <p>Nível: <strong id="nivel-texto"><?php echo htmlspecialchars($nivel_usuario); ?></strong></p>
                 <div class="progress-bar">
                     <div id="progresso-barra" style="width: <?php echo $progresso_percentual; ?>%;"></div>
                 </div>
                 <small id="progresso-texto"><?php echo htmlspecialchars($proximoNivelTexto); ?></small>
             </div>
-
             <div class="perfil-recompensas">
                 <h3>Minhas Recompensas</h3>
                 <div class="recompensa-item"><i class="fas fa-tag"></i><span><strong>10% de desconto</strong><br>No Mercado Orgânico</span></div>
@@ -160,7 +143,6 @@ try {
     
     <script>
         const DADOS_PERFIL = {
-            pontuacao: <?php echo $pontuacao_atual; ?>,
             co2: <?php echo $usuario_completo['co2_evitado'] ?? 0; ?>,
             agua: <?php echo $usuario_completo['agua_economizada'] ?? 0; ?>,
             energia: <?php echo $usuario_completo['energia_poupada'] ?? 0; ?>
