@@ -1,5 +1,4 @@
 <?php
-session_start();
 // Garante que o config.php seja carregado para usar a BASE_URL e o $pdo
 require_once('../PHP/config.php'); 
 // Inclui nosso arquivo de funções reutilizáveis

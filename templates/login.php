@@ -1,6 +1,4 @@
 <?php
-// A sessão deve ser sempre a primeira coisa a ser iniciada
-session_start();
 
 // Inclui o config.php para definir a BASE_URL e a conexão $pdo
 require_once('../PHP/config.php');
@@ -25,8 +23,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $senha = $_POST['senha'];
         
         try {
-            // Usando a chave primária 'id' numérica para a sessão
-            $sql = "SELECT id, nome, senha_hash FROM usuarios WHERE email = :email";
+            // =======================================================
+            // CORREÇÃO APLICADA AQUI:
+            // Buscando a coluna 'is_admin' junto com os outros dados
+            // =======================================================
+            $sql = "SELECT id, nome, senha_hash, is_admin FROM usuarios WHERE email = :email";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':email' => $email]);
             $usuario = $stmt->fetch();
@@ -35,6 +36,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 session_regenerate_id(true);
                 $_SESSION['usuario_id'] = $usuario['id'];
                 $_SESSION['usuario_nome'] = $usuario['nome'];
+                
+                // =======================================================
+                // CORREÇÃO APLICADA AQUI:
+                // Salvando o status de admin na sessão
+                // =======================================================
+                $_SESSION['is_admin'] = (bool)$usuario['is_admin'];
                 
                 header('Location: ' . BASE_URL . '/templates/homeComLogin.php');
                 exit();

@@ -1,5 +1,7 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) { session_start(); }
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 if (!defined('BASE_URL')) {
     require_once(dirname(__DIR__) . '/PHP/config.php');
 }
@@ -19,6 +21,9 @@ $primeiroNome = current(explode(' ', $nomeCompleto));
                     <a href="<?php echo BASE_URL; ?>/templates/pontos_coleta.php">Pontos de Coleta</a>
                     <a href="<?php echo BASE_URL; ?>/templates/homeComLogin.php#sobre-nos">Sobre Nós</a>
                     <a href="<?php echo BASE_URL; ?>/templates/homeComLogin.php#about">Saiba Mais</a>
+                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
+                        <a href="<?php echo BASE_URL; ?>/templates/admin_home.php" style="color: #ef4444; font-weight: bold;">Admin</a>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="nav-right">

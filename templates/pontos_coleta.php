@@ -1,7 +1,4 @@
 <?php
-// Inicia a sessão para verificar o status de login
-session_start();
-
 // CORREÇÃO: Inclui o config.php no topo para definir a BASE_URL
 require_once('../PHP/config.php');
 ?>

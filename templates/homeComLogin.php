@@ -1,5 +1,4 @@
 <?php
-session_start();
 // Inclui o config.php no topo para definir a BASE_URL
 require_once('../PHP/config.php');
 

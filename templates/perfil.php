@@ -1,6 +1,4 @@
 <?php
-session_start();
-// Inclui o config.php e helpers no topo
 require_once('../PHP/config.php');
 require_once('../PHP/helpers.php');
 
@@ -12,7 +10,7 @@ if (!isset($_SESSION['usuario_id'])) {
 
 // --- Busca os dados do perfil do banco de dados ---
 try {
-    // A consulta busca todos os dados necessários
+    // A consulta agora usa u.id para a junção e o filtro
     $sql = "SELECT u.id_personalizado, u.data_cadastro, u.foto_perfil, e.* FROM usuarios u
             LEFT JOIN estatisticas_usuario e ON u.id = e.id_usuario
             WHERE u.id = :id_usuario";
@@ -27,10 +25,17 @@ try {
         $usuario_base = $stmt_user->fetch();
         // Cria um array com valores padrão para não dar erro na página
         $usuario_completo = array_merge($usuario_base, [
-            'itens_reciclados' => 0, 'mercados_visitados' => 0, 'meses_consecutivos' => 0,
-            'nivel' => 'Reciclador Iniciante', 'progresso_nivel' => 0,
-            'co2_evitado' => 0, 'agua_economizada' => 0, 'energia_poupada' => 0,
-            'saldo_ddv' => 0, 'saldo_processamento' => 0, 'saldo_total_acumulado' => 0
+            'itens_reciclados' => 0,
+            'mercados_visitados' => 0,
+            'meses_consecutivos' => 0,
+            'nivel' => 'Reciclador Iniciante',
+            'progresso_nivel' => 0,
+            'co2_evitado' => 0,
+            'agua_economizada' => 0,
+            'energia_poupada' => 0,
+            'saldo_ddv' => 0,
+            'saldo_processamento' => 0,
+            'saldo_total_acumulado' => 0
         ]);
     }
 
@@ -79,12 +84,19 @@ try {
                 <p>Membro desde <?php echo date('M/Y', strtotime($usuario_completo['data_cadastro'])); ?></p>
             </div>
             
+            <div class="upload-form">
+                <form action="../PHP/upload_foto.php" method="post" enctype="multipart/form-data">
+                    <label for="foto" class="btn-upload">Trocar Foto</label>
+                    <input type="file" name="foto_perfil" id="foto" required style="display: none;" onchange="this.form.submit()">
+                </form>
+            </div>
+
             <div class="perfil-stats">
                 <div><strong><?php echo htmlspecialchars($usuario_completo['itens_reciclados']); ?></strong><span>Itens</span></div>
                 <div><strong><?php echo htmlspecialchars($usuario_completo['mercados_visitados']); ?></strong><span>Mercados</span></div>
                 <div><strong><?php echo $mesesComoMembro; ?></strong><span>Meses</span></div>
             </div>
-            <div class="perfil-nivel">
+            <div class="perfil-nivel" data-pontuacao="<?php echo $pontuacao_atual; ?>">
                 <p>Nível: <strong id="nivel-texto"><?php echo htmlspecialchars($nivel_usuario); ?></strong></p>
                 <div class="progress-bar">
                     <div id="progresso-barra" style="width: <?php echo $progresso_percentual; ?>%;"></div>
