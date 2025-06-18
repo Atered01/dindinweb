@@ -42,24 +42,18 @@ if (!file_exists($caminho_template)) {
 // Inicia o FPDI
 $pdf = new Fpdi();
 $pdf->AddPage();
-
-// =======================================================
-// CORREÇÃO APLICADA AQUI
-// Informa ao FPDI qual arquivo PDF ele deve usar como base
-// =======================================================
 $pdf->setSourceFile($caminho_template);
-
-// Importa a primeira página do nosso PDF de template
 $templateId = $pdf->importPage(1);
-// Usa o template importado como fundo da página
 $pdf->useTemplate($templateId, ['adjustPageSize' => true]);
 
-// --- Escrevendo o nome do usuário no PDF ---
 $pdf->SetFont('Helvetica', 'B', 20);
-$pdf->SetTextColor(70, 70, 70);
+$pdf->SetTextColor(80, 80, 80);
 // Ajuste os valores de X e Y para alinhar o nome no seu PDF
-$pdf->SetXY(50, 115); 
-$pdf->Write(0, utf8_decode($nome_usuario));
+$posicao_X = 77;
+$posicao_Y = 82.5; 
+$pdf->SetXY($posicao_X, $posicao_Y);
+
+$pdf->Cell(0, 10, utf8_decode($nome_usuario), 0, 0, 'C');
 
 // Força o download do novo PDF
 $pdf->Output('I', 'Certificado_DinDinVerde_' . $tipo_certificado . '.pdf');
