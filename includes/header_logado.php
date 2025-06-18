@@ -26,6 +26,7 @@ $isAdminViewingAsUser = (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] &
                     <a href="<?php echo BASE_URL; ?>/templates/homeComLogin.php">Início</a>
                     <a href="<?php echo BASE_URL; ?>/templates/pontos_coleta.php">Pontos de Coleta</a>
                     <a href="<?php echo BASE_URL; ?>/templates/homeComLogin.php#sobre-nos">Sobre Nós</a>
+                    <a href="<?php echo BASE_URL; ?>/templates/homeComLogin.php#about">Saiba mais</a>
                 </div>
             </div>
             <div class="nav-right">
@@ -40,7 +41,8 @@ $isAdminViewingAsUser = (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] &
                         <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
                             <a href="<?php echo BASE_URL; ?>/templates/admin_home.php" class="dropdown-item"><i class="fas fa-shield-alt"></i> Painel Admin</a>
                         <?php endif; ?>
-                          <button id="theme-switcher" class="dropdown-item"><i class="fas fa-palette"></i> Trocar Tema</button>
+                        <a href="#" id="theme-switcher" class="dropdown-item"><i class="fas fa-palette"></i> Trocar Tema</a>
+
                         <a href="<?php echo BASE_URL; ?>/PHP/logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Sair</a>
                     </div>
                 </div>

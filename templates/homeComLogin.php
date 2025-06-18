@@ -75,6 +75,7 @@ $primeiroNome = current(explode(' ', $nomeCompleto));
     ?>
 
     <script src="<?php echo BASE_URL; ?>/js/scripts.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/contato.js"></script>
 </body>
 
 </html>

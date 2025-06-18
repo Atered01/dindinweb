@@ -10,14 +10,14 @@
             <div class="about-us-sdg">
                 <h3 class="sdg-title">Nossas ODS - ONU de impacto</h3>
                 <div class="sdg-grid">
-                    <img src="/caminho/para/sua/imagem/ods-8.png" alt="ODS 8: Trabalho Decente e Crescimento Econômico">
-                    <img src="/caminho/para/sua/imagem/ods-9.png" alt="ODS 9: Indústria, Inovação e Infraestrutura">
+                    <img src="<?php echo BASE_URL; ?> /img/ods-8.png" alt="ODS 8: Trabalho Decente e Crescimento Econômico">
+                    <img src="<?php echo BASE_URL; ?> /img/ods-9.png" alt="ODS 9: Indústria, Inovação e Infraestrutura">
                     <div class="sdg-main-card">
-                        <img src="https://logodownload.org/wp-content/uploads/2017/11/objetivos-desenvolvimento-sustentavel-ods-logo.png" alt="Logo ODS ONU" style="max-width: 150px; margin: 0 auto 1rem;">
+                        <img src="<?php echo BASE_URL; ?> /img/ods-logo.png" alt="Logo ODS ONU" style="max-width: 150px; margin: 0 auto 1rem;">
                         <h4>Sobre o nosso trabalho para alcançar os Objetivos de Desenvolvimento Sustentável no Brasil</h4>
                     </div>
-                    <img src="/caminho/para/sua/imagem/ods-11.png" alt="ODS 11: Cidades e Comunidades Sustentáveis">
-                    <img src="/caminho/para/sua/imagem/ods-12.png" alt="ODS 12: Consumo e Produção Responsáveis">
+                    <img src="<?php echo BASE_URL; ?> /img/ods-11.png" alt="ODS 11: Cidades e Comunidades Sustentáveis">
+                    <img src="<?php echo BASE_URL; ?> /img/ods-12.png" alt="ODS 12: Consumo e Produção Responsáveis">
                 </div>
             </div>
         </div>

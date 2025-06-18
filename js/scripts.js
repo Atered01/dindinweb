@@ -1,27 +1,26 @@
 function toggleMobileMenu() {
     const menu = document.getElementById('mobileMenu');
-    if (menu) {
-        menu.classList.toggle('hidden');
-    }
+    if (menu) menu.classList.toggle('hidden');
 }
 
 // Correção do cache para o botão "voltar" do navegador
 window.addEventListener('pageshow', function(event) {
-    if (event.persisted) {
-        window.location.reload();
-    }
+    if (event.persisted) window.location.reload();
 });
 
 // Executa o código principal quando o HTML estiver pronto
 document.addEventListener('DOMContentLoaded', function () {
- const themeSwitcher = document.getElementById('theme-switcher');
+    
+    // --- LÓGICA DE TROCA DE TEMA (COM PADRÃO CLARO) ---
+    const themeSwitcher = document.getElementById('theme-switcher');
     const darkThemeLink = document.createElement('link');
     darkThemeLink.rel = 'stylesheet';
-    darkThemeLink.href = '/Dindinweb/css/dark-theme.css'; // Usando caminho absoluto
+    // Assumindo que a BASE_URL não está disponível no JS, usamos um caminho absoluto fixo
+    darkThemeLink.href = '/Dindinweb/css/dark-theme.css'; 
 
     // Função para aplicar o tema
     function applyTheme(theme) {
-        document.body.classList.remove('dark-theme', 'light-theme'); // Limpa temas antigos
+        document.body.classList.remove('dark-theme', 'light-theme');
         
         if (theme === 'dark') {
             document.body.classList.add('dark-theme');
@@ -36,11 +35,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Lógica inteligente para definir o tema inicial
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    // Se não houver tema salvo, usa a preferência do sistema. Se não, usa o tema claro como padrão.
-    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+    // =======================================================
+    // CORREÇÃO APLICADA AQUI
+    // Define 'light' como padrão se nenhum tema estiver salvo.
+    // =======================================================
+    const initialTheme = localStorage.getItem('theme') || 'light';
     
     // Aplica o tema inicial ao carregar a página
     applyTheme(initialTheme);
@@ -53,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
             applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
         });
     }
+
 
     // --- LÓGICA DO DROPDOWN DO USUÁRIO ---
     const dropdownToggle = document.getElementById('dropdown-toggle');

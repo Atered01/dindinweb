@@ -324,3 +324,10 @@ body.dark-theme .page-pontos-coleta .ponto {
     background-color: #3f3f46;
     border-color: #52525b;
 }
+
+body.dark-theme #sobre-nos .sdg-main-card h4 {
+    color: #e5e7eb;
+    /* Usando um tom de branco mais suave */
+    font-weight: 600;
+    /* Um pouco menos de negrito */
+}

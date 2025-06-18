@@ -74,7 +74,7 @@ try {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/home.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/perfil.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/dark-theme.css"/>
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/dark-theme.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -137,33 +137,57 @@ try {
                 </div>
                 <h3>Seus certificados</h3>
                 <div class="grid-2">
-                    <div class="certificado-card"><strong>Certificado Bronze</strong>
-                        <p>Por reciclar mais de 100 itens.</p><a href="#">Baixar</a>
-                    </div>
-                    <div class="certificado-card"><strong>Embaixador Verde</strong>
-                        <p>Por indicar 5 amigos.</p><a href="#">Compartilhar</a>
-                    </div>
+                    <?php if ($pontuacao_atual >= 100): // Bronze e acima 
+                    ?>
+                        <div class="certificado-card">
+                            <strong>Certificado Bronze</strong>
+                            <p>Por alcançar o nível Reciclador Bronze.</p>
+                            <a href="../PHP/gerar_certificado.php?tipo=bronze" target="_blank">Baixar</a>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($pontuacao_atual >= 250): // Prata e acima 
+                    ?>
+                        <div class="certificado-card">
+                            <strong>Certificado Prata</strong>
+                            <p>Por alcançar o nível Reciclador Prata.</p>
+                            <a href="../PHP/gerar_certificado.php?tipo=prata" target="_blank">Baixar</a>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($pontuacao_atual >= 500): // Apenas Ouro 
+                    ?>
+                        <div class="certificado-card">
+                            <strong>Certificado Ouro</strong>
+                            <p>Por alcançar o nível Reciclador Ouro.</p>
+                            <a href="../PHP/gerar_certificado.php?tipo=ouro" target="_blank">Baixar</a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <div class="certificado-card"><strong>Embaixador Verde</strong>
+                    <p>Por indicar 5 amigos.</p><a href="#">Compartilhar</a>
                 </div>
             </div>
+    </div>
 
-            <?php if ($perfil_proprio): ?>
-                <div id="meu-dindin" class="tab-content">
-                    <h3>Seu saldo DinDin Verde</h3>
-                    <div class="saldo-box">
-                        <div class="saldo-principal">
-                            <strong><?php echo number_format($usuario_completo['saldo_ddv'], 2, ',', '.'); ?> <small>DDV</small></strong>
-                            <a href="#" class="btn">Resgatar</a>
-                        </div>
-                        <hr>
-                        <div class="saldo-detalhes">
-                            <div class="saldo-item"><span>Disponível</span><strong><?php echo number_format($usuario_completo['saldo_ddv'], 2, ',', '.'); ?> DDV</strong></div>
-                            <div class="saldo-item"><span>Em processamento</span><strong><?php echo number_format($usuario_completo['saldo_processamento'], 2, ',', '.'); ?> DDV</strong></div>
-                            <div class="saldo-item"><span>Total acumulado</span><strong><?php echo number_format($usuario_completo['saldo_total_acumulado'], 2, ',', '.'); ?> DDV</strong></div>
-                        </div>
-                    </div>
+    <?php if ($perfil_proprio): ?>
+        <div id="meu-dindin" class="tab-content">
+            <h3>Seu saldo DinDin Verde</h3>
+            <div class="saldo-box">
+                <div class="saldo-principal">
+                    <strong><?php echo number_format($usuario_completo['saldo_ddv'], 2, ',', '.'); ?> <small>DDV</small></strong>
+                    <a href="#" class="btn">Resgatar</a>
                 </div>
-            <?php endif; ?>
-        </main>
+                <hr>
+                <div class="saldo-detalhes">
+                    <div class="saldo-item"><span>Disponível</span><strong><?php echo number_format($usuario_completo['saldo_ddv'], 2, ',', '.'); ?> DDV</strong></div>
+                    <div class="saldo-item"><span>Em processamento</span><strong><?php echo number_format($usuario_completo['saldo_processamento'], 2, ',', '.'); ?> DDV</strong></div>
+                    <div class="saldo-item"><span>Total acumulado</span><strong><?php echo number_format($usuario_completo['saldo_total_acumulado'], 2, ',', '.'); ?> DDV</strong></div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+    </main>
     </div>
 
     <?php include '../includes/footer.php'; ?>
