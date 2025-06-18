@@ -4,6 +4,7 @@ require_once('../PHP/config.php');
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,6 +12,7 @@ require_once('../PHP/config.php');
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/home.css" />
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/pontos_coleta.css" />
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/dark-theme.css" />
 </head>
 
 <body>
@@ -47,15 +49,16 @@ require_once('../PHP/config.php');
                 </div>
             </aside>
         </div>
-        
+
         <div style="text-align: center; margin-top: 2rem;">
             <a href="<?php echo BASE_URL; ?>../PHP/index.php" style="text-decoration: none; color: #1b8e3e; font-weight: bold;">← Voltar para o início</a>
         </div>
     </main>
-    
+
     <?php include '../includes/footer.php'; ?>
 
-    <script src="<?php echo BASE_URL; ?>../js/pontosColeta.js"></script>
-    <script src="<?php echo BASE_URL; ?>../js/scripts.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/pontosColeta.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/scripts.js"></script>
 </body>
+
 </html>

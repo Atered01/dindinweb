@@ -15,13 +15,13 @@ if (isset($_SESSION['mensagem_sucesso'])) {
 
 // Lógica de processamento de login
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
+
     if (empty($_POST['email']) || empty($_POST['senha'])) {
         $erro_login = "E-mail e senha são obrigatórios.";
     } else {
         $email = $_POST['email'];
         $senha = $_POST['senha'];
-        
+
         try {
             // =======================================================
             // CORREÇÃO APLICADA AQUI:
@@ -36,16 +36,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 session_regenerate_id(true);
                 $_SESSION['usuario_id'] = $usuario['id'];
                 $_SESSION['usuario_nome'] = $usuario['nome'];
-                
+
                 // =======================================================
                 // CORREÇÃO APLICADA AQUI:
                 // Salvando o status de admin na sessão
                 // =======================================================
                 $_SESSION['is_admin'] = (bool)$usuario['is_admin'];
-                
+
                 header('Location: ' . BASE_URL . '/templates/homeComLogin.php');
                 exit();
-                
             } else {
                 $erro_login = "E-mail ou senha inválidos.";
             }
@@ -58,6 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -66,12 +66,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/home.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/login.css">
 </head>
+
 <body>
 
-    <?php 
-        if (file_exists('../includes/header_publico.php')) {
-            include '../includes/header_publico.php';
-        }
+    <?php
+    if (file_exists('../includes/header_publico.php')) {
+        include '../includes/header_publico.php';
+    }
     ?>
 
     <main>
@@ -79,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="login-header">
                 <div class="icon-circle">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                     </svg>
                 </div>
                 <h2>Login</h2>
@@ -111,12 +112,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </main>
 
-    <?php 
-        if (file_exists('../includes/footer.php')) {
-            include '../includes/footer.php';
-        }
+    <?php
+    if (file_exists('../includes/footer.php')) {
+        include '../includes/footer.php';
+    }
     ?>
 
     <script src="<?php echo BASE_URL; ?>/js/scripts.js"></script>
+
+    <script>
+        // Este código roda DEPOIS do scripts.js e garante que a página de login
+        // sempre fique no tema claro, removendo a classe do tema escuro do body.
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.classList.remove('dark-theme');
+        });
+    </script>
 </body>
+
 </html>

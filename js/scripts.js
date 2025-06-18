@@ -1,6 +1,3 @@
-// Em Dindinweb/js/scripts.js
-
-// Lógica para o menu mobile
 function toggleMobileMenu() {
     const menu = document.getElementById('mobileMenu');
     if (menu) {
@@ -17,7 +14,46 @@ window.addEventListener('pageshow', function(event) {
 
 // Executa o código principal quando o HTML estiver pronto
 document.addEventListener('DOMContentLoaded', function () {
+ const themeSwitcher = document.getElementById('theme-switcher');
+    const darkThemeLink = document.createElement('link');
+    darkThemeLink.rel = 'stylesheet';
+    darkThemeLink.href = '/Dindinweb/css/dark-theme.css'; // Usando caminho absoluto
+
+    // Função para aplicar o tema
+    function applyTheme(theme) {
+        document.body.classList.remove('dark-theme', 'light-theme'); // Limpa temas antigos
+        
+        if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+            document.head.appendChild(darkThemeLink);
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.body.classList.add('light-theme');
+            if (document.head.contains(darkThemeLink)) {
+                document.head.removeChild(darkThemeLink);
+            }
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    // Lógica inteligente para definir o tema inicial
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // Se não houver tema salvo, usa a preferência do sistema. Se não, usa o tema claro como padrão.
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
     
+    // Aplica o tema inicial ao carregar a página
+    applyTheme(initialTheme);
+
+    // Adiciona o evento de clique no botão para alternar
+    if (themeSwitcher) {
+        themeSwitcher.addEventListener('click', (event) => {
+            event.preventDefault(); 
+            let currentTheme = localStorage.getItem('theme');
+            applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+    }
+
     // --- LÓGICA DO DROPDOWN DO USUÁRIO ---
     const dropdownToggle = document.getElementById('dropdown-toggle');
     const dropdownMenu = document.getElementById('dropdown-menu');

@@ -1,0 +1,326 @@
+/* Em Dindinweb/css/dark-theme.css */
+
+/*
+Este arquivo SOBRESCREVE as variáveis de cor e estilos
+quando a classe "dark-theme" está presente no <body>
+*/
+
+body.dark-theme {
+    --color-primary-dark: #4ade80;
+    --color-primary: #86efac;
+    --color-primary-light: #27272a;
+    --color-bg: #18181b;
+    /* Fundo principal (preto suave) */
+    --color-white: #27272a;
+    /* Cor de fundo dos cards (cinza escuro) */
+    --color-gray-light: #3f3f46;
+    --color-border: #3f3f46;
+    --color-text-dark: #f4f4f5;
+    /* Texto principal (quase branco) */
+    --color-text: #a1a1aa;
+    /* Texto secundário (cinza claro) */
+    --color-text-light: #71717a;
+}
+
+/* === AJUSTES GERAIS PARA O TEMA ESCURO === */
+body.dark-theme {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme strong {
+    color: var(--color-text-dark);
+}
+
+body.dark-theme .main-header,
+body.dark-theme .main-footer,
+body.dark-theme .admin-header {
+    background-color: #1f2937;
+    border-color: var(--color-border);
+}
+
+body.dark-theme .logo span,
+body.dark-theme .dropdown-toggle,
+body.dark-theme .nav-links a,
+body.dark-theme .footer-links a,
+body.dark-theme .footer-contact li {
+    color: #d1d5db;
+}
+
+body.dark-theme .nav-links a.active {
+    color: var(--color-primary-dark);
+    border-bottom-color: var(--color-primary-dark);
+}
+
+body.dark-theme .dropdown-menu {
+    background-color: #374151;
+    border-color: #4b5563;
+}
+
+body.dark-theme .dropdown-item:hover {
+    background-color: #4b5563;
+}
+
+/* === PÁGINA DE PERFIL === */
+body.dark-theme .perfil-container {
+    background-color: transparent;
+}
+
+body.dark-theme .perfil-lateral,
+body.dark-theme .conteudo-principal {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    box-shadow: none;
+}
+
+/* Textos dentro do painel lateral */
+body.dark-theme .perfil-header p,
+body.dark-theme .perfil-stats span,
+body.dark-theme .perfil-nivel p,
+body.dark-theme .perfil-nivel small,
+body.dark-theme .perfil-recompensas h3,
+body.dark-theme .recompensa-item span {
+    color: var(--color-text);
+}
+
+body.dark-theme .perfil-stats strong {
+    color: var(--color-primary-dark);
+}
+
+body.dark-theme .recompensa-item {
+    border-color: var(--color-border);
+}
+
+body.dark-theme .recompensa-item strong {
+    color: var(--color-text-dark);
+}
+
+/* Abas */
+body.dark-theme .tabs {
+    border-bottom-color: var(--color-border);
+}
+
+body.dark-theme .tab-button {
+    color: var(--color-text);
+}
+
+body.dark-theme .tab-button.active {
+    color: var(--color-primary-dark);
+    border-bottom-color: var(--color-primary-dark);
+}
+
+/* Stat-box e Certificados no conteúdo principal */
+body.dark-theme .stat-box,
+body.dark-theme .certificado-card {
+    background-color: var(--color-gray-light);
+    border-color: var(--color-border);
+}
+
+body.dark-theme .stat-box span,
+body.dark-theme .certificado-card p {
+    color: var(--color-text);
+}
+
+body.dark-theme .certificado-card a {
+    color: var(--color-primary);
+}
+
+/* Saldo */
+body.dark-theme .saldo-box {
+    background-color: var(--color-primary-light);
+    border-color: #4b5563;
+}
+
+body.dark-theme .saldo-detalhes,
+body.dark-theme .saldo-detalhes span {
+    color: var(--color-text);
+}
+
+body.dark-theme .saldo-item {
+    background-color: var(--color-white);
+    border-color: var(--color-border);
+}
+
+/* Define a cor para o texto descritivo (ex: "Disponível") */
+body.dark-theme .saldo-item span {
+    color: var(--color-text);
+    /* Cor secundária (cinza claro) */
+}
+
+/* Define a cor para o valor em negrito (ex: "680,50 DDV") */
+body.dark-theme .saldo-item strong {
+    color: var(--color-text-dark);
+    /* Cor principal (quase branco) */
+}
+
+/* Gráfico */
+body.dark-theme .grafico-container {
+    background-color: var(--color-white);
+}
+
+/* Botões */
+body.dark-theme .btn {
+    border-color: var(--color-primary-dark);
+    background-color: transparent;
+    color: var(--color-primary-dark);
+}
+
+body.dark-theme .btn:hover {
+    background-color: var(--color-primary-dark);
+    color: var(--color-bg);
+}
+
+/* === PÁGINA DE ADMIN === */
+body.dark-theme .admin-header {
+    background-color: #111827;
+}
+
+body.dark-theme .stat-card {
+    background-color: var(--color-white);
+}
+
+body.dark-theme .admin-table {
+    background-color: var(--color-white);
+}
+
+body.dark-theme .admin-table thead th {
+    background-color: var(--color-gray-light);
+}
+
+body.dark-theme .admin-table tbody tr:hover {
+    background-color: var(--color-primary-light);
+}
+
+/* === FORMULÁRIOS (LOGIN, CADASTRO) === */
+body.dark-theme #login-container,
+body.dark-theme #cadastro-container {
+    background-color: var(--color-white);
+    color: var(--color-text-dark);
+}
+
+body.dark-theme #login-container h2,
+body.dark-theme #cadastro-container h1 {
+    color: var(--color-text-dark);
+}
+
+body.dark-theme input[type="text"],
+body.dark-theme input[type="email"],
+body.dark-theme input[type="password"] {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: var(--color-text-dark);
+}
+
+body.dark-theme input:focus {
+    border-color: var(--color-primary-dark);
+}
+
+/* === PÁGINA SOBRE (#about) === */
+body.dark-theme #about {
+    background-color: var(--color-bg);
+}
+
+body.dark-theme #about h1,
+body.dark-theme #about h2,
+body.dark-theme #about h3 {
+    color: var(--color-text-dark);
+}
+
+body.dark-theme #about p,
+body.dark-theme #about .subtitle {
+    color: var(--color-text);
+}
+
+body.dark-theme #about .faq,
+body.dark-theme #about .contact {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+}
+
+body.dark-theme #about .faq-item p {
+    color: var(--color-text-light);
+}
+
+body.dark-theme #about .faq-button {
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    border: 1px solid var(--color-primary-dark);
+}
+
+body.dark-theme #about .faq-button:hover {
+    background: var(--color-primary-dark);
+    color: #fff;
+}
+
+body.dark-theme #about .contact input,
+body.dark-theme #about .contact select,
+body.dark-theme #about .contact textarea {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: var(--color-text-dark);
+}
+
+body.dark-theme #about .contact input::placeholder,
+body.dark-theme #about .contact textarea::placeholder {
+    color: var(--color-text-light);
+}
+
+body.dark-theme #about .contact button[type="submit"] {
+    background-color: var(--color-primary-dark);
+    color: #18181b;
+}
+
+body.dark-theme #about .contact button[type="submit"]:hover {
+    background-color: #6ee7b7;
+}
+
+
+/* === EFEITOS DE HOVER UNIFICADOS === */
+
+/* Efeito para links do cabeçalho (menu principal) */
+body.dark-theme .nav-links a:hover {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+/* Efeito para o dropdown do usuário */
+body.dark-theme .dropdown-toggle:hover,
+body.dark-theme .dropdown-toggle:hover span,
+body.dark-theme .dropdown-toggle:hover i {
+    color: var(--color-primary);
+}
+
+/* Efeito para links rápidos e ícones sociais no rodapé */
+body.dark-theme .footer-links a:hover,
+body.dark-theme .social-links a:hover {
+    color: var(--color-primary);
+}
+
+/* Em Dindinweb/css/dark-theme.css (adicionar ao final) */
+
+/* === PÁGINA PONTOS DE COLETA === */
+body.dark-theme .page-pontos-coleta {
+    background-color: var(--color-bg);
+}
+
+body.dark-theme .page-pontos-coleta h1,
+body.dark-theme .page-pontos-coleta .subtitulo {
+    color: var(--color-text-dark);
+}
+
+body.dark-theme .page-pontos-coleta .painel-lateral {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+}
+
+body.dark-theme .page-pontos-coleta .mapa {
+    background-color: #3f3f46;
+}
+
+body.dark-theme .page-pontos-coleta .ponto {
+    background-color: #3f3f46;
+    border-color: #52525b;
+}

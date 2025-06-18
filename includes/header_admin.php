@@ -6,7 +6,6 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 if (!defined('BASE_URL')) {
-    // Este caminho é mais robusto, pois se baseia na localização do próprio arquivo
     require_once(dirname(__DIR__) . '/PHP/config.php');
 }
 
@@ -24,18 +23,18 @@ $primeiroNome = current(explode(' ', $nomeCompleto));
                 </a>
                 <div class="nav-links">
                     <a href="<?php echo BASE_URL; ?>/templates/admin_home.php">Dashboard</a>
-                    </div>
+                </div>
             </div>
             <div class="nav-right">
-                <a href="<?php echo BASE_URL; ?>/index.php" class="btn btn-secondary" target="_blank">Ver Site</a>
                 <div class="dropdown">
                     <button id="dropdown-toggle" class="dropdown-toggle">
                         <span>Olá, <?php echo htmlspecialchars($primeiroNome); ?>!</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div id="dropdown-menu" class="dropdown-menu">
-                        <a href="<?php echo BASE_URL; ?>/templates/perfil.php" class="dropdown-item"><i class="fas fa-user"></i> Meu Perfil</a>
-                        <a href="<?php echo BASE_URL; ?>/templates/logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                        <a href="<?php echo BASE_URL; ?>/PHP/view_as_user.php" class="dropdown-item" target="_blank"><i class="fas fa-globe"></i> Ver Site</a>
+                        <a href="<?php echo BASE_URL; ?>/PHP/logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Sair</a>
+
                     </div>
                 </div>
             </div>
