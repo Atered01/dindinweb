@@ -168,26 +168,26 @@ try {
                     <p>Por indicar 5 amigos.</p><a href="#">Compartilhar</a>
                 </div>
             </div>
-    </div>
 
-    <?php if ($perfil_proprio): ?>
-        <div id="meu-dindin" class="tab-content">
-            <h3>Seu saldo DinDin Verde</h3>
-            <div class="saldo-box">
-                <div class="saldo-principal">
-                    <strong><?php echo number_format($usuario_completo['saldo_ddv'], 2, ',', '.'); ?> <small>DDV</small></strong>
-                    <a href="#" class="btn">Resgatar</a>
+
+            <?php if ($perfil_proprio): ?>
+                <div id="meu-dindin" class="tab-content">
+                    <h3>Seu saldo DinDin Verde</h3>
+                    <div class="saldo-box">
+                        <div class="saldo-principal">
+                            <strong><?php echo number_format($usuario_completo['saldo_ddv'], 2, ',', '.'); ?> <small>DDV</small></strong>
+                            <a href="#" class="btn">Resgatar</a>
+                        </div>
+                        <hr>
+                        <div class="saldo-detalhes">
+                            <div class="saldo-item"><span>Disponível: </span><strong><?php echo number_format($usuario_completo['saldo_ddv'], 2, ',', '.'); ?> DDV</strong></div>
+                            <div class="saldo-item"><span>Em processamento: </span><strong><?php echo number_format($usuario_completo['saldo_processamento'], 2, ',', '.'); ?> DDV</strong></div>
+                            <div class="saldo-item"><span>Total acumulado: </span><strong><?php echo number_format($usuario_completo['saldo_total_acumulado'], 2, ',', '.'); ?> DDV</strong></div>
+                        </div>
+                    </div>
                 </div>
-                <hr>
-                <div class="saldo-detalhes">
-                    <div class="saldo-item"><span>Disponível</span><strong><?php echo number_format($usuario_completo['saldo_ddv'], 2, ',', '.'); ?> DDV</strong></div>
-                    <div class="saldo-item"><span>Em processamento</span><strong><?php echo number_format($usuario_completo['saldo_processamento'], 2, ',', '.'); ?> DDV</strong></div>
-                    <div class="saldo-item"><span>Total acumulado</span><strong><?php echo number_format($usuario_completo['saldo_total_acumulado'], 2, ',', '.'); ?> DDV</strong></div>
-                </div>
-            </div>
-        </div>
-    <?php endif; ?>
-    </main>
+            <?php endif; ?>
+        </main>
     </div>
 
     <?php include '../includes/footer.php'; ?>
