@@ -97,7 +97,7 @@ You need a local server environment like XAMPP, WAMP, or MAMP, which includes:
 ## 📁 Project Structure
 
 The project follows a standard structure for PHP applications:
-
+ ```
 Dindinweb/
 ├── PHP/             # Core backend logic (config, helpers, processing scripts)
 ├── templates/       # All user-facing pages (.php files with HTML)
@@ -111,9 +111,8 @@ Dindinweb/
 ├── certificados/    # PDF templates for certificates
 ├── lib/             # External libraries (FPDF, FPDI)
 └── README.md        # This file
+ ```
 
-
----
 
 ## 🙏 Acknowledgements
 
