@@ -74,7 +74,8 @@
 
 #cadastro-container input[type="text"],
 #cadastro-container input[type="email"],
-#cadastro-container input[type="password"] {
+#cadastro-container input[type="password"],
+#cadastro-container input[type="number"]  {
     width: 100%;
     padding: 12px 15px;
     border: 1px solid #ddd;
@@ -149,3 +150,4 @@
     text-align: center;
     font-weight: 500;
 }
+

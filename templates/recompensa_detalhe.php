@@ -39,34 +39,46 @@ try {
     $stmt_saldo = $pdo->prepare("SELECT saldo_ddv FROM estatisticas_usuario WHERE usuario_id_personalizado = ?");
     $stmt_saldo->execute([$_SESSION['usuario_id']]);
     $saldo_usuario = $stmt_saldo->fetchColumn();
-
 } catch (PDOException $e) {
     die("Erro ao carregar detalhes da recompensa: " . $e->getMessage());
 }
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($recompensa['nome']); ?> - DinDin Verde</title>
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/home.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/perfil.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/dark-theme.css">
 
     <style>
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; }
-        .gallery-grid img { width: 100%; height: 120px; object-fit: cover; border-radius: 0.5rem; }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .gallery-grid img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
     </style>
 </head>
+
 <body>
     <?php include '../includes/header_logado.php'; ?>
 
     <main class="container" style="padding-top: 2rem;">
         <a href="recompensas.php" style="text-decoration: none; color: var(--color-primary-dark); font-weight: 600;">&larr; Voltar para a vitrine</a>
-        
+
         <div style="display: flex; gap: 2rem; margin-top: 1rem; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 300px;">
                 <img src="<?php echo htmlspecialchars($recompensa['imagem_url']); ?>" alt="<?php echo htmlspecialchars($recompensa['nome']); ?>" style="width: 100%; height: auto; border-radius: 0.5rem;">
@@ -88,7 +100,7 @@ try {
                     <p style="font-size: 1.25rem;">Custo: <strong style="color: var(--color-primary-dark);"><?php echo number_format($recompensa['custo_em_ddv'], 2, ',', '.'); ?> DDV</strong></p>
                     <p style="font-size: 0.9rem;">Seu Saldo: <?php echo number_format($saldo_usuario, 2, ',', '.'); ?> DDV</p>
                 </div>
-                
+
                 <div style="margin-top: 2rem;">
                     <?php if ($saldo_usuario >= $recompensa['custo_em_ddv']): ?>
                         <a href="../PHP/resgatar_recompensa.php?id=<?php echo $recompensa['id']; ?>" class="btn btn-full" style="padding: 0.8rem;" onclick="return confirm('Tem certeza que deseja resgatar este voucher por <?php echo $recompensa['custo_em_ddv']; ?> DDV?');">Resgatar Agora</a>
@@ -103,4 +115,5 @@ try {
     <?php include '../includes/footer.php'; ?>
     <script src="<?php echo BASE_URL; ?>/js/scripts.js"></script>
 </body>
+
 </html>

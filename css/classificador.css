@@ -1,0 +1,47 @@
+/* Em Dindinweb/css/classificador.css */
+
+.classifier-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--color-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+}
+
+#webcam-container canvas {
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+#label-container div {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
+
+.start-button,
+.descartar-button {
+    background-color: var(--color-primary-dark);
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 1rem;
+    transition: background-color 0.2s;
+}
+
+.descartar-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#status-message {
+    margin-top: 1rem;
+    font-weight: bold;
+    min-height: 24px;
+}

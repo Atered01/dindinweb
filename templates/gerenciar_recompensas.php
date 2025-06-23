@@ -63,8 +63,7 @@ try {
                 <div class="form-row">
                     <div class="form-group">
                         <label for="custo_em_ddv">Custo em DDV</label>
-                        <input type="number" id="custo_em_ddv" name="custo_em_ddv" step="0.01" required>
-                    </div>
+                        <input type="number" id="custo_em_ddv" name="custo_em_ddv" step="0.01"  min="0" required placeholder="Ex: 150.00"></div>
                     <div class="form-group">
                         <label for="tipo">Tipo</label>
                         <select id="tipo" name="tipo" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px;">
