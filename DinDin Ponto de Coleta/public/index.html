@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ponto de Coleta - DinDin Verde</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<header class="topo">
+  <img src="images/dindinlogo.png" alt="Logo DinDin Verde" class="logo-central">
+</header>
+
+<main class="container">
+  <section class="etapa" id="etapa-identificacao">
+  <h2>Identifique-se</h2>
+  <form onsubmit="event.preventDefault(); iniciarIdentificacao();" class="form-identificacao">
+    <input type="text" id="cpf" placeholder="Digite seu CPF" required maxlength="14">
+    <button type="submit">Prosseguir</button>
+  </form>
+</section>
+
+  <section class="etapa" id="etapa-descarte" style="display:none">
+    <h2 id="saudacao">Olá!</h2>
+    <p><strong>CPF:</strong> <span id="cpf-exibido"></span></p>
+    <p><strong>Pontos acumulados:</strong> <span id="pontos-exibidos">Carregando...</span></p>
+    <div id="webcam-container"></div>
+    <form id="form-descarte">
+      <input type="hidden" id="embalagem" name="embalagem">
+      <button type="submit">Confirmar Descarte</button>
+    </form>
+    <p id="resultado"></p>
+    <button onclick="trocarCPF()">Trocar CPF</button>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+<script>
+  const URL = "https://teachablemachine.withgoogle.com/models/Lteu4YAiQ/"; // <-- Substitua aqui
+
+  let model, webcam;
+
+  async function init() {
+    const modelURL = URL + "model.json";
+    const metadataURL = URL + "metadata.json";
+    model = await tmImage.load(modelURL, metadataURL);
+    webcam = new tmImage.Webcam(224, 224, true);
+    await webcam.setup();
+    await webcam.play();
+    document.getElementById("webcam-container").appendChild(webcam.canvas);
+    window.requestAnimationFrame(loop);
+  }
+
+  async function loop() {
+    webcam.update();
+    await predict();
+    window.requestAnimationFrame(loop);
+  }
+
+  async function predict() {
+    const prediction = await model.predict(webcam.canvas);
+    prediction.sort((a, b) => b.probability - a.probability);
+    const maisProvavel = prediction[0];
+
+    if (maisProvavel.probability > 0.85) {
+      document.getElementById('embalagem').value = maisProvavel.className.toLowerCase();
+    }
+  }
+
+  function limparFormatacaoCPF(cpf) {
+    return cpf.replace(/[^\d]/g, ''); // Remove pontos e traço
+  }
+
+  function formatarCPF(cpf) {
+    cpf = limparFormatacaoCPF(cpf);
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+
+  function validarCPF(cpf) {
+    cpf = limparFormatacaoCPF(cpf);
+    if (!/^\d{11}$/.test(cpf)) return false;
+
+    let soma = 0;
+    for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
+    let resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(9))) return false;
+
+    soma = 0;
+    for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i)) * (11 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    return resto === parseInt(cpf.charAt(10));
+  }
+
+ async function buscarPontos(cpf) {
+  try {
+    const resposta = await fetch(`../backend/pontos.php?cpf=${cpf}`);
+    const dados = await resposta.json();
+    document.getElementById('pontos-exibidos').textContent = dados.pontos || '0';
+
+    // Saudação personalizada
+    if (dados.nome) {
+      document.getElementById('saudacao').textContent = `Olá, ${dados.nome}! Seja bem-vindo(a)!`;
+    } else {
+      document.getElementById('saudacao').textContent = `Olá!`;
+    }
+  } catch {
+    document.getElementById('pontos-exibidos').textContent = 'Erro';
+  }
+}
+
+  function iniciarIdentificacao() {
+    let cpfDigitado = document.getElementById('cpf').value;
+    const cpfLimpo = limparFormatacaoCPF(cpfDigitado);
+
+    if (validarCPF(cpfLimpo)) {
+      sessionStorage.setItem('cpf', cpfLimpo);
+      document.getElementById('cpf-exibido').textContent = formatarCPF(cpfLimpo);
+      document.getElementById('etapa-identificacao').style.display = 'none';
+      document.getElementById('etapa-descarte').style.display = 'block';
+      buscarPontos(cpfLimpo);
+      init();
+    } else {
+      alert('CPF inválido. Verifique e tente novamente.');
+    }
+  }
+
+  function trocarCPF() {
+    sessionStorage.removeItem('cpf');
+    document.getElementById('cpf').value = '';
+    document.getElementById('etapa-descarte').style.display = 'none';
+    document.getElementById('etapa-identificacao').style.display = 'block';
+  }
+
+  document.getElementById('form-descarte').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const embalagem = document.getElementById('embalagem').value;
+    const cpf = sessionStorage.getItem('cpf') || '';
+
+    const resposta = await fetch('../backend/ponto_coleta.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `cpf=${cpf}&embalagem=${embalagem}`
+    });
+
+    const resultado = await resposta.json();
+    const texto = resultado.erro || `✅ ${resultado.mensagem}! Pontos: ${resultado.pontos}`;
+    document.getElementById('resultado').textContent = texto;
+
+    if (resultado.bloquear) {
+      alert('⚠️ Embalagem não reconhecida! Item será devolvido.');
+    }
+
+    buscarPontos(cpf);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-image: url('images/fundo.jpg');
+  background-size: cover;        /* cobre a tela inteira */
+  background-repeat: no-repeat;  /* evita repetir */
+  background-position: center;   /* centraliza */
+  background-attachment: fixed;  /* fixa a imagem no lugar */
+  text-align: center;
+}
+
+
+.topo {
+  padding: 20px 0;
+  background-color: #ffffff;
+}
+
+.logo-central {
+  width: 400px;
+  display: block;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.etapa h2 {
+  color: #2b8330;
+}
+
+input[type="text"] {
+  padding: 10px;
+  width: 80%;
+  margin: 10px 0;
+  font-size: 1rem;
+}
+
+button {
+  padding: 10px 45px;
+  background-color: #43A047;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #388E3C;
+}
+
+strong {
+  color: #2e7d32; /* Verde escuro do logo, por exemplo */
+  font-weight: bold;
+  font-size: 20px;
+
+}
+
+#cpf-exibido,
+#pontos-exibidos {
+  color: #000;
+}
+
+
+#webcam-container canvas {
+  border-radius: 12px;
+  margin-top: 15px;
+  width: 400px; /* ou qualquer valor desejado */
+  height: 400px;
+  object-fit: cover;   /* para cortar excesso e manter o foco */
+  background-color: black; /* Cor de fundo caso não carregue */
+}
+
+.form-identificacao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.form-identificacao input {
+  padding: 10px;
+  font-size: 16px;
+  width: 350px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-identificacao button {
+  padding: 10px;
+  font-size: 18px;
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.form-identificacao button:hover {
+  background-color: #1b5e20;
+}
