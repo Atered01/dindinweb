@@ -116,6 +116,6 @@ Dindinweb/
 
 ## 🙏 Acknowledgements
 
-* Agradecimento à comunidade de código aberto.
-* Ícones por [Font Awesome](https://fontawesome.com/).
-* Fontes por [Google Fonts](https://fonts.google.com/).
+* Thanks to the open source community.
+* Icons by [Font Awesome](https://fontawesome.com/).
+* Fonts by [Google Fonts](https://fonts.google.com/).
