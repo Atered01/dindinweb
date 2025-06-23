@@ -54,29 +54,34 @@ document.addEventListener('DOMContentLoaded', () => {
         window.requestAnimationFrame(loop);
     }
 
-    async function predict() {
-        if (!model) return;
-        const prediction = await model.predict(webcam.canvas);
-        let itemEncontrado = false;
+   async function predict() {
+    if (!model) return;
+    const prediction = await model.predict(webcam.canvas);
+    let itemEncontrado = false;
 
-        for (let i = 0; i < maxPredictions; i++) {
-            const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-            if (labelContainer.childNodes[i]) {
-                labelContainer.childNodes[i].innerHTML = classPrediction;
-            }
-
-            if (prediction[i].probability > 0.97 && podeDescartar) {
-                descartarBtn.style.display = 'inline-block';
-                itemDetectado = prediction[i].className;
-                itemEncontrado = true;
-            }
+    for (let i = 0; i < maxPredictions; i++) {
+        // --- LÓGICA DE FORMATAÇÃO ALTERADA AQUI ---
+        const probabilityInPercent = (prediction[i].probability * 100).toFixed(0);
+        const classPrediction =
+            prediction[i].className + ": " + probabilityInPercent + "%";
+        
+        if (labelContainer.childNodes[i]) {
+            labelContainer.childNodes[i].innerHTML = classPrediction;
         }
 
-        if (!itemEncontrado) {
-            descartarBtn.style.display = 'none';
-            itemDetectado = null;
+        // Se a probabilidade for alta (97%+) e o descarte for permitido, mostra o botão
+        if (prediction[i].probability > 0.97 && podeDescartar) {
+            document.getElementById('descartarBtn').style.display = 'inline-block';
+            itemDetectado = prediction[i].className;
+            itemEncontrado = true;
         }
     }
+
+    if (!itemEncontrado && podeDescartar) {
+        document.getElementById('descartarBtn').style.display = 'none';
+        itemDetectado = null;
+    }
+}
 
     async function descartarItem() {
         if (!itemDetectado || !podeDescartar) return;
