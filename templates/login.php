@@ -1,19 +1,14 @@
 <?php
+require_once(dirname(__DIR__) . '/PHP/config.php');
 
-// Inclui o config.php para definir a BASE_URL e a conexão $pdo
-require_once('../PHP/config.php');
-
-// Variáveis para mensagens
 $mensagem_sucesso = null;
 $erro_login = null;
 
-// Verifica se existe uma mensagem de sucesso vinda do cadastro
 if (isset($_SESSION['mensagem_sucesso'])) {
     $mensagem_sucesso = $_SESSION['mensagem_sucesso'];
     unset($_SESSION['mensagem_sucesso']);
 }
 
-// Lógica de processamento de login
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($_POST['email']) || empty($_POST['senha'])) {
@@ -23,27 +18,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $senha = $_POST['senha'];
 
         try {
-            // =======================================================
-            // CORREÇÃO APLICADA AQUI:
-            // Buscando a coluna 'is_admin' junto com os outros dados
-            // =======================================================
-            $sql = "SELECT id, nome, senha_hash, is_admin FROM usuarios WHERE email = :email";
+            // Agora usando id_personalizado
+            $sql = "SELECT id_personalizado, nome, senha_hash, is_admin FROM usuarios WHERE email = :email";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':email' => $email]);
             $usuario = $stmt->fetch();
 
             if ($usuario && password_verify($senha, $usuario['senha_hash'])) {
                 session_regenerate_id(true);
-                $_SESSION['usuario_id'] = $usuario['id'];
+                $_SESSION['usuario_id'] = $usuario['id_personalizado']; // corrigido aqui
                 $_SESSION['usuario_nome'] = $usuario['nome'];
-
-                // =======================================================
-                // CORREÇÃO APLICADA AQUI:
-                // Salvando o status de admin na sessão
-                // =======================================================
                 $_SESSION['is_admin'] = (bool)$usuario['is_admin'];
 
-                header('Location: ' . BASE_URL . '/templates/homeComLogin.php');
+                if ($_SESSION['is_admin']) {
+                    header('Location: ' . BASE_URL . '/templates/admin_home.php');
+                } else {
+                    header('Location: ' . BASE_URL . '/templates/homeComLogin.php');
+                }
                 exit();
             } else {
                 $erro_login = "E-mail ou senha inválidos.";
@@ -65,13 +56,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/home.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/login.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/dark-theme.css">
 </head>
 
 <body>
 
     <?php
-    if (file_exists('../includes/header_publico.php')) {
-        include '../includes/header_publico.php';
+    // Inclui o cabeçalho público
+    $headerPath = PROJECT_ROOT . '/includes/header_publico.php';
+    if (file_exists($headerPath)) {
+        include $headerPath;
     }
     ?>
 
@@ -86,23 +80,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h2>Login</h2>
             </div>
 
-            <?php if (isset($mensagem_sucesso)): ?>
+            <?php if ($mensagem_sucesso): ?>
                 <div class="success-message"><?php echo htmlspecialchars($mensagem_sucesso); ?></div>
             <?php endif; ?>
 
-            <?php if (isset($erro_login)): ?>
+            <?php if ($erro_login): ?>
                 <div class="error-message"><?php echo htmlspecialchars($erro_login); ?></div>
             <?php endif; ?>
 
             <form method="POST" action="<?php echo BASE_URL; ?>/templates/login.php">
-                <div>
+                <div class="form-group">
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" required>
                 </div>
-                <div>
+                <div class="form-group">
                     <label for="senha">Senha:</label>
                     <input type="password" id="senha" name="senha" required>
                 </div>
+
+                <div class="forgot-password-link">
+                    <a href="esqueci_senha.php">Esqueceu sua senha?</a>
+                </div>
+
                 <button type="submit">Entrar</button>
             </form>
 
@@ -113,20 +112,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </main>
 
     <?php
-    if (file_exists('../includes/footer.php')) {
-        include '../includes/footer.php';
+    $footerPath = PROJECT_ROOT . '/includes/footer.php';
+    if (file_exists($footerPath)) {
+        include $footerPath;
     }
     ?>
 
     <script src="<?php echo BASE_URL; ?>/js/scripts.js"></script>
-
-    <script>
-        // Este código roda DEPOIS do scripts.js e garante que a página de login
-        // sempre fique no tema claro, removendo a classe do tema escuro do body.
-        document.addEventListener('DOMContentLoaded', function() {
-            document.body.classList.remove('dark-theme');
-        });
-    </script>
 </body>
 
 </html>

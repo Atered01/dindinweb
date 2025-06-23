@@ -25,6 +25,8 @@ $isAdminViewingAsUser = (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] &
                 <div class="nav-links">
                     <a href="<?php echo BASE_URL; ?>/templates/homeComLogin.php">Início</a>
                     <a href="<?php echo BASE_URL; ?>/templates/pontos_coleta.php">Pontos de Coleta</a>
+                    <a href="<?php echo BASE_URL; ?>/templates/recompensas.php">Recompensas</a>
+                    <a href="<?php echo BASE_URL; ?>/templates/classificar.php">Classificar</a>
                     <a href="<?php echo BASE_URL; ?>/templates/homeComLogin.php#sobre-nos">Sobre Nós</a>
                     <a href="<?php echo BASE_URL; ?>/templates/homeComLogin.php#about">Saiba mais</a>
                 </div>

@@ -1,17 +1,13 @@
 <?php
-// Em Dindinweb/templates/admin.php
 require_once('../PHP/config.php');
 
-// GUARDA DE SEGURANÇA:
-// Se o usuário não estiver logado OU não for admin, expulsa para a home.
 if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
     header('Location: ' . BASE_URL . '/templates/homeComLogin.php');
     exit();
 }
 
-// Busca todos os usuários do banco para exibir na tabela
 try {
-    $stmt = $pdo->query("SELECT id, id_personalizado, nome, email, data_cadastro FROM usuarios ORDER BY data_cadastro DESC");
+    $stmt = $pdo->query("SELECT id_personalizado, nome, email, data_cadastro FROM usuarios ORDER BY data_cadastro DESC");
     $todos_usuarios = $stmt->fetchAll();
 } catch (PDOException $e) {
     die("Erro ao buscar usuários: " . $e->getMessage());
@@ -42,7 +38,6 @@ try {
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>ID Personalizado</th>
                         <th>Nome</th>
                         <th>E-mail</th>
@@ -52,7 +47,6 @@ try {
                 <tbody>
                     <?php foreach ($todos_usuarios as $usuario): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($usuario['id']); ?></td>
                             <td><?php echo htmlspecialchars($usuario['id_personalizado']); ?></td>
                             <td><?php echo htmlspecialchars($usuario['nome']); ?></td>
                             <td><?php echo htmlspecialchars($usuario['email']); ?></td>

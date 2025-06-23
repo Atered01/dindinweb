@@ -1,18 +1,17 @@
 /* Em Dindinweb/css/login.css */
 
-/* Removemos o estilo do BODY daqui para usar o padrão do home.css */
-/* Agora os estilos são aplicados somente dentro do #login-container */
-
+/* --- Container Principal --- */
 #login-container {
     background-color: #fff;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    width: 380px; /* Aumentando um pouco a largura */
+    width: 380px;
     max-width: 100%;
-    margin: 3rem auto; /* Centraliza o container na página */
+    margin: 3rem auto;
 }
 
+/* --- Cabeçalho do Card (Ícone e Título) --- */
 #login-container .login-header {
     display: flex;
     align-items: center;
@@ -32,10 +31,22 @@
     margin-right: 15px;
 }
 
-#login-container .icon-circle svg {
+#login-container .icon-circle svg,
+#login-container .icon-circle i {
     fill: #2e7d32;
+    color: #2e7d32;
+    /* Para Font Awesome */
     width: 28px;
     height: 28px;
+}
+
+#login-container .icon-circle.verify {
+    background-color: #e0f2fe;
+    color: #0ea5e9;
+}
+
+#login-container .icon-circle.verify i {
+    color: #0ea5e9;
 }
 
 #login-container h2 {
@@ -44,30 +55,48 @@
     font-size: 28px;
 }
 
+/* --- Formulário e Campos --- */
 #login-container form {
     display: flex;
     flex-direction: column;
 }
 
+#login-container .form-group {
+    margin-bottom: 1.5rem;
+}
+
 #login-container label {
-    margin-top: 10px;
-    margin-bottom: 5px;
+    display: block;
+    margin-bottom: 8px;
     color: #555;
     font-weight: bold;
+    font-size: 14px;
 }
 
 #login-container input[type="email"],
-#login-container input[type="password"] {
+#login-container input[type="password"],
+#login-container input[type="text"] {
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    margin-bottom: 15px;
     width: 100%;
     box-sizing: border-box;
     font-size: 16px;
 }
 
+/* Estilo específico para o campo de código de verificação */
+#login-container input#codigo {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 0.5rem;
+    padding-left: 0.75rem;
+    /* Ajusta o padding para centralizar com o espaçamento */
+}
+
+/* --- Botão de Envio --- */
 #login-container button[type="submit"] {
+    width: 100%;
     padding: 12px 15px;
     background-color: #28a745;
     color: white;
@@ -75,16 +104,16 @@
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    width: 100%;
-    box-sizing: border-box;
     font-weight: bold;
     transition: background-color 0.2s;
+    margin-top: 1rem;
 }
 
 #login-container button[type="submit"]:hover {
     background-color: #218838;
 }
 
+/* --- Links e Mensagens --- */
 #login-container .info-link {
     text-align: center;
     margin-top: 20px;
@@ -105,8 +134,7 @@
     text-decoration: underline;
 }
 
-/* Estilos para mensagens de sucesso e erro */
-#login-container .success-message, 
+#login-container .success-message,
 #login-container .error-message {
     padding: 1rem;
     margin-bottom: 1.5rem;
@@ -125,4 +153,27 @@
     border: 1px solid #ef4444;
     background-color: #fee2e2;
     color: #991b1b;
+}
+
+#login-container .forgot-password-link {
+    text-align: right;
+    margin-top: -10px;
+    /* Puxa o link para perto do campo de senha */
+    margin-bottom: 20px;
+    /* Aumenta o espaço antes do botão "Entrar" */
+}
+
+#login-container .forgot-password-link a {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    /* Uma cor mais sutil que o verde principal */
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+#login-container .forgot-password-link a:hover {
+    color: var(--color-primary-dark);
+    /* Cor principal no hover */
+    text-decoration: underline;
 }

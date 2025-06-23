@@ -331,3 +331,31 @@ body.dark-theme #sobre-nos .sdg-main-card h4 {
     font-weight: 600;
     /* Um pouco menos de negrito */
 }
+
+body.dark-theme #cadastro-container textarea,
+body.dark-theme #cadastro-container select,
+body.dark-theme #cadastro-container input[type="number"] {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: var(--color-text-dark);
+}
+
+/* Melhora a aparência do botão de upload de arquivo no tema escuro */
+body.dark-theme #cadastro-container input[type="file"] {
+    color: var(--color-text-light);
+}
+
+body.dark-theme #cadastro-container input[type="file"]::file-selector-button {
+    background-color: var(--color-gray-light);
+    color: var(--color-text-dark);
+    border: 1px solid #4b5563;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-right: 1rem;
+}
+
+body.dark-theme #cadastro-container input[type="file"]::file-selector-button:hover {
+    background-color: #4b5563;
+}

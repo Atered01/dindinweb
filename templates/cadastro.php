@@ -1,8 +1,8 @@
 <?php
-// Garante que o config.php seja carregado para usar a BASE_URL e o $pdo
+// Garante que o config.php e helpers.php sejam carregados
 require_once('../PHP/config.php'); 
-// Inclui nosso arquivo de funções reutilizáveis
 require_once('../PHP/helpers.php'); 
+//Gerar id unico está no helpers.php
 
 $erros = [];
 
@@ -28,7 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Inicia uma transação para garantir a integridade dos dados
             $pdo->beginTransaction();
 
+            // 1. Gera um ID personalizado que é garantido ser único
+            $id_personalizado = gerarIdPersonalizado($pdo); 
+
             $dados_usuario = [
+                'id_personalizado' => $id_personalizado,
                 'nome' => $_POST['nome'],
                 'email' => $_POST['email'],
                 'senha_hash' => password_hash($_POST['senha'], PASSWORD_DEFAULT),
@@ -42,39 +46,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'telefone' => $_POST['telefone']
             ];
             
-            // Insere os dados básicos do usuário (sem o id_personalizado ainda)
-            $sql_usuario = "INSERT INTO usuarios (nome, email, senha_hash, CPF, logradouro, numero, bairro, cidade, estado, cep, telefone) 
-                            VALUES (:nome, :email, :senha_hash, :CPF, :logradouro, :numero, :bairro, :cidade, :estado, :cep, :telefone)";
+            // 2. Insere na tabela 'usuarios' usando o id_personalizado como chave
+            $sql_usuario = "INSERT INTO usuarios (id_personalizado, nome, email, senha_hash, CPF, logradouro, numero, bairro, cidade, estado, cep, telefone) 
+                            VALUES (:id_personalizado, :nome, :email, :senha_hash, :CPF, :logradouro, :numero, :bairro, :cidade, :estado, :cep, :telefone)";
             $stmt_usuario = $pdo->prepare($sql_usuario);
             $stmt_usuario->execute($dados_usuario);
             
-            // Pega o ID numérico que acabou de ser criado
-            $id_novo_usuario_numerico = $pdo->lastInsertId();
-            
-            // Gera o ID Personalizado usando a função do arquivo helpers.php
-            $id_personalizado = gerarIdPersonalizado($pdo);
-            
-            // Atualiza o usuário recém-criado com seu ID Personalizado
-            $sql_id_pers = "UPDATE usuarios SET id_personalizado = ? WHERE id = ?";
-            $stmt_id_pers = $pdo->prepare($sql_id_pers);
-            $stmt_id_pers->execute([$id_personalizado, $id_novo_usuario_numerico]);
-            
-            // Insere a linha de estatísticas usando o ID numérico
-            $sql_stats = "INSERT INTO estatisticas_usuario (id_usuario) VALUES (?)";
+            // 3. Insere na tabela de estatísticas usando o MESMO id_personalizado
+            $sql_stats = "INSERT INTO estatisticas_usuario (usuario_id_personalizado) VALUES (?)";
             $stmt_stats = $pdo->prepare($sql_stats);
-            $stmt_stats->execute([$id_novo_usuario_numerico]);
+            $stmt_stats->execute([$id_personalizado]);
             
-            // Se tudo deu certo, confirma as operações no banco
             $pdo->commit();
-
-            $_SESSION['mensagem_sucesso'] = "Cadastro realizado com sucesso! Faça o login para continuar.";
+            $_SESSION['mensagem_sucesso'] = "Cadastro realizado com sucesso!";
             header("Location: login.php");
             exit();
 
         } catch (PDOException $e) {
             $pdo->rollBack();
             if ($e->errorInfo[1] == 1062) {
-                $erros['geral'] = "Usuário já cadastrado com esse email!";
+                // A chave única pode ser o email ou o id_personalizado
+                if (strpos($e->getMessage(), "'email'") !== false) {
+                    $erros['geral'] = "Usuário já cadastrado com esse email!";
+                } else {
+                    $erros['geral'] = "Ocorreu um erro ao gerar seu ID. Tente novamente.";
+                }
             } else {
                 $erros['geral'] = "Erro ao cadastrar. Tente novamente.";
             }

@@ -23,6 +23,7 @@ $primeiroNome = current(explode(' ', $nomeCompleto));
                 </a>
                 <div class="nav-links">
                     <a href="<?php echo BASE_URL; ?>/templates/admin_home.php">Dashboard</a>
+                    <a href="<?php echo BASE_URL; ?>/templates/gerenciar_recompensas.php">Recompensas</a>
                 </div>
             </div>
             <div class="nav-right">
@@ -33,6 +34,7 @@ $primeiroNome = current(explode(' ', $nomeCompleto));
                     </button>
                     <div id="dropdown-menu" class="dropdown-menu">
                         <a href="<?php echo BASE_URL; ?>/PHP/view_as_user.php" class="dropdown-item" target="_blank"><i class="fas fa-globe"></i> Ver Site</a>
+                        <a href="#" id="theme-switcher" class="dropdown-item"><i class="fas fa-palette"></i> Trocar Tema</a>
                         <a href="<?php echo BASE_URL; ?>/PHP/logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Sair</a>
 
                     </div>
