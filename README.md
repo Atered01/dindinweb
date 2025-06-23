@@ -97,3 +97,26 @@ You need a local server environment like XAMPP, WAMP, or MAMP, which includes:
 ## 📁 Project Structure
 
 The project follows a standard structure for PHP applications:
+
+Dindinweb/
+├── PHP/             # Core backend logic (config, helpers, processing scripts)
+├── templates/       # All user-facing pages (.php files with HTML)
+├── css/             # All CSS stylesheets
+├── js/              # All JavaScript files
+├── includes/        # Reusable HTML parts (header, footer, sections)
+├── uploads/         # Directory for user-uploaded images
+│   ├── perfil/      # (Suggestion) For profile pictures
+│   └── recompensas/ # For reward images
+├── my_model/        # Directory for the Teachable Machine model files
+├── certificados/    # PDF templates for certificates
+├── lib/             # External libraries (FPDF, FPDI)
+└── README.md        # This file
+
+
+---
+
+## 🙏 Acknowledgements
+
+* Agradecimento à comunidade de código aberto.
+* Ícones por [Font Awesome](https://fontawesome.com/).
+* Fontes por [Google Fonts](https://fonts.google.com/).
