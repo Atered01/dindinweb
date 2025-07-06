@@ -6,6 +6,9 @@ if (!isset($_SESSION['empresa_id'])) {
     header('Location: empresa_login.php');
     exit();
 }
+
+$gemini_api_key = getenv('GEMINI_API_KEY');
+
 $empresa_id = $_SESSION['empresa_id'];
 
 // --- LÓGICA DOS FILTROS ---
@@ -69,7 +72,7 @@ try {
 
     // --- CONSULTAS ATUALIZADAS PARA USAR A CLÁUSULA DINÂMICA ---
     $sql_base = "FROM descartes d JOIN produtos p ON d.produto_id = p.id $join_usuarios $join_estatisticas WHERE $clausula_where";
-    
+
     $stmt_kpi = $pdo->prepare("SELECT COUNT(d.id) as total_embalagens, COUNT(DISTINCT d.usuario_id_personalizado) as clientes_unicos $sql_base");
     $stmt_kpi->execute($params);
     $kpi = $stmt_kpi->fetch();
@@ -77,26 +80,27 @@ try {
     $stmt_impacto = $pdo->prepare("SELECT SUM(p.co2_evitado) as total_co2, SUM(p.pontos_ddv) as total_ddv $sql_base");
     $stmt_impacto->execute($params);
     $impacto = $stmt_impacto->fetch();
-    
+
     $stmt_tendencia = $pdo->prepare("SELECT DATE(d.data_descarte) as dia, COUNT(d.id) as total $sql_base GROUP BY dia ORDER BY dia ASC");
     $stmt_tendencia->execute($params);
     $tendencia_diaria = $stmt_tendencia->fetchAll();
-    
+
     $stmt_produtos = $pdo->prepare("SELECT p.nome_produto, COUNT(d.id) as total $sql_base GROUP BY p.nome_produto ORDER BY total DESC LIMIT 10");
     $stmt_produtos->execute($params);
     $produtos_populares = $stmt_produtos->fetchAll();
-
 } catch (PDOException $e) {
     die("Erro ao carregar dados do painel: " . $e->getMessage());
 }
 
-$labels_tendencia = []; $data_tendencia = [];
+$labels_tendencia = [];
+$data_tendencia = [];
 foreach ($tendencia_diaria as $row) {
     $labels_tendencia[] = date("d/m", strtotime($row['dia']));
     $data_tendencia[] = $row['total'];
 }
 
-$labels_produtos = []; $data_produtos = [];
+$labels_produtos = [];
+$data_produtos = [];
 foreach ($produtos_populares as $prod) {
     $labels_produtos[] = $prod['nome_produto'];
     $data_produtos[] = $prod['total'];
@@ -104,6 +108,7 @@ foreach ($produtos_populares as $prod) {
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -115,8 +120,9 @@ foreach ($produtos_populares as $prod) {
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/dark-theme.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
-    
+
     <?php include '../includes/header_empresa.php'; ?>
 
     <main class="admin-container">
@@ -179,10 +185,18 @@ foreach ($produtos_populares as $prod) {
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card"><div class="info"><strong><?php echo number_format($kpi['total_embalagens'] ?? 0); ?></strong><span>Embalagens Recicladas</span></div></div>
-            <div class="stat-card"><div class="info"><strong><?php echo number_format($impacto['total_co2'] ?? 0, 2, ',', '.'); ?> kg</strong><span>CO₂ Evitado</span></div></div>
-            <div class="stat-card"><div class="info"><strong><?php echo number_format($kpi['clientes_unicos'] ?? 0); ?></strong><span>Clientes Engajados</span></div></div>
-            <div class="stat-card"><div class="info"><strong><?php echo number_format($impacto['total_ddv'] ?? 0, 0, '.', '.'); ?></strong><span>DDV Gerados</span></div></div>
+            <div class="stat-card">
+                <div class="info"><strong><?php echo number_format($kpi['total_embalagens'] ?? 0); ?></strong><span>Embalagens Recicladas</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="info"><strong><?php echo number_format($impacto['total_co2'] ?? 0, 2, ',', '.'); ?> kg</strong><span>CO₂ Evitado</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="info"><strong><?php echo number_format($kpi['clientes_unicos'] ?? 0); ?></strong><span>Clientes Engajados</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="info"><strong><?php echo number_format($impacto['total_ddv'] ?? 0, 0, '.', '.'); ?></strong><span>DDV Gerados</span></div>
+            </div>
         </div>
 
         <div class="user-management" style="margin-top: 2rem;">
@@ -211,13 +225,65 @@ foreach ($produtos_populares as $prod) {
             }
         });
 
-        const DADOS_TENDENCIA = { labels: <?php echo json_encode($labels_tendencia); ?>, data: <?php echo json_encode($data_tendencia); ?> };
-        const DADOS_PRODUTOS = { labels: <?php echo json_encode($labels_produtos); ?>, data: <?php echo json_encode($data_produtos); ?> };
+        const DADOS_TENDENCIA = {
+            labels: <?php echo json_encode($labels_tendencia); ?>,
+            data: <?php echo json_encode($data_tendencia); ?>
+        };
+        const DADOS_PRODUTOS = {
+            labels: <?php echo json_encode($labels_produtos); ?>,
+            data: <?php echo json_encode($data_produtos); ?>
+        };
         const ctxTendencia = document.getElementById('tendenciaChart').getContext('2d');
-        new Chart(ctxTendencia, { type: 'line', data: { labels: DADOS_TENDENCIA.labels, datasets: [{ label: 'Embalagens Recicladas', data: DADOS_TENDENCIA.data, backgroundColor: 'rgba(46, 125, 50, 0.1)', borderColor: 'rgba(46, 125, 50, 1)', borderWidth: 2, tension: 0.1, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } });
+        new Chart(ctxTendencia, {
+            type: 'line',
+            data: {
+                labels: DADOS_TENDENCIA.labels,
+                datasets: [{
+                    label: 'Embalagens Recicladas',
+                    data: DADOS_TENDENCIA.data,
+                    backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                    borderColor: 'rgba(46, 125, 50, 1)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
         const ctxProdutos = document.getElementById('produtosChart').getContext('2d');
-        new Chart(ctxProdutos, { type: 'bar', data: { labels: DADOS_PRODUTOS.labels, datasets: [{ label: 'Total Descartado', data: DADOS_PRODUTOS.data, backgroundColor: 'rgba(66, 165, 245, 0.7)', borderColor: 'rgba(25, 118, 210, 1)', borderWidth: 1 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { beginAtZero: true } } } });
+        new Chart(ctxProdutos, {
+            type: 'bar',
+            data: {
+                labels: DADOS_PRODUTOS.labels,
+                datasets: [{
+                    label: 'Total Descartado',
+                    data: DADOS_PRODUTOS.data,
+                    backgroundColor: 'rgba(66, 165, 245, 0.7)',
+                    borderColor: 'rgba(25, 118, 210, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     </script>
     <script src="<?php echo BASE_URL; ?>/js/scripts.js"></script>
 </body>
+
 </html>

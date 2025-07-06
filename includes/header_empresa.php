@@ -31,3 +31,27 @@ $nomeEmpresa = $_SESSION['empresa_nome'] ?? 'Parceiro';
         </div>
     </nav>
 </header>
+<a href="#" id="rag-fab-trigger" class="rag-fab" title="Consulta Inteligente">
+    <i class="fas fa-robot"></i>
+</a>
+
+<div class="rag-overlay" id="rag-overlay"></div>
+
+<div class="rag-side-panel" id="rag-side-panel">
+    <div class="rag-panel-header">
+        <h3>Consulta Inteligente (VerdIA)</h3>
+        <button class="rag-panel-close" id="rag-panel-close" title="Fechar">&times;</button>
+    </div>
+    
+    <div class="rag-container">
+        <div id="chat-window">
+            <div class="chat-message assistant-message">
+                Olá! Eu sou o VerdIA, seu assistente administrativo. Como posso ajudar hoje?
+            </div>
+        </div>
+        <form id="rag-form">
+            <input type="text" id="pergunta-input" placeholder="Faça uma pergunta..." required autocomplete="off">
+            <button type="submit" class="btn btn-primary" title="Enviar"><i class="fas fa-paper-plane"></i></button>
+        </form>
+    </div>
+</div>

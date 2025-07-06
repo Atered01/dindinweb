@@ -8,7 +8,9 @@ if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
     exit();
 }
 
-// Limpa a flag de "Ver como Usuário" ao voltar para o painel de admin
+// --- ESSENCIAL: Definir a variável da chave ANTES de incluir o painel ---
+$gemini_api_key = getenv('GEMINI_API_KEY');
+
 if (isset($_GET['exit_view_mode'])) {
     unset($_SESSION['view_as_user']);
 }
@@ -181,7 +183,9 @@ try {
         </div>
     </main>
 
+    <?php include '../includes/rag_panel.php'; ?> 
     <?php include '../includes/footer.php'; ?>
+    
 
     <script>
         const DADOS_GRAFICO_CADASTROS = {
@@ -201,5 +205,6 @@ try {
     
     <script src="<?php echo BASE_URL; ?>/js/scripts.js"></script>
     <script src="<?php echo BASE_URL; ?>/js/admin.js"></script>
+    
 </body>
 </html>
