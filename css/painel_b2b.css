@@ -1,0 +1,39 @@
+/* Em Dindinweb/css/painel_b2b.css */
+
+/* Ajustes gerais para a página do painel */
+body {
+    background-color: #f8f9fa; /* Um cinza muito claro */
+}
+
+/* Reutiliza o container do admin, mas podemos ajustar se necessário */
+.admin-container {
+    max-width: 1200px;
+}
+
+/* Estilo para os cards de KPI do painel B2B */
+.stats-grid .stat-card {
+    background: linear-gradient(135deg, #475569, #1e293b);
+    color: white;
+    border: none;
+}
+
+.stats-grid .stat-card .info strong,
+.stats-grid .stat-card .info span {
+    color: white;
+}
+
+.stats-grid .stat-card .info strong {
+    font-size: 2rem;
+}
+
+.stats-grid .stat-card .info span {
+    opacity: 0.8;
+}
+
+/* Gráfico */
+.user-management {
+    background-color: var(--color-white);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+}

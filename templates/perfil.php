@@ -213,9 +213,9 @@ try {
                         </div>
                         <hr>
                         <div class="saldo-detalhes">
-                            <div class="saldo-item"><span>Disponível</span><strong><?php echo number_format($usuario_completo['saldo_ddv'], 2, ',', '.'); ?> DDV</strong></div>
-                            <div class="saldo-item"><span>Em processamento</span><strong><?php echo number_format($usuario_completo['saldo_processamento'], 2, ',', '.'); ?> DDV</strong></div>
-                            <div class="saldo-item"><span>Total acumulado</span><strong><?php echo number_format($usuario_completo['saldo_total_acumulado'], 2, ',', '.'); ?> DDV</strong></div>
+                            <div class="saldo-item"><span>Disponível: </span><strong><?php echo number_format($usuario_completo['saldo_ddv'], 2, ',', '.'); ?> DDV</strong></div>
+                            <div class="saldo-item"><span>Em processamento: </span><strong><?php echo number_format($usuario_completo['saldo_processamento'], 2, ',', '.'); ?> DDV</strong></div>
+                            <div class="saldo-item"><span>Total acumulado: </span><strong><?php echo number_format($usuario_completo['saldo_total_acumulado'], 2, ',', '.'); ?> DDV</strong></div>
                         </div>
                     </div>
                 </div>
