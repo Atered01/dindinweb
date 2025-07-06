@@ -17,42 +17,27 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['item_detectado'])) {
     responder(false, 'Erro: Requisição inválida.');
 }
 
-$item_recebido = $_POST['item_detectado'];
+$id_ia_recebido = $_POST['item_detectado'];
 $id_usuario = $_SESSION['usuario_id'];
-
-// Lógica de Negócios: Define os pontos e estatísticas para cada item
-$recompensas_por_item = [
-    'Vidro de Perfume' => ['ddv' => 10, 'co2' => 0.08, 'agua' => 2, 'energia' => 0.15],
-    'Garrafa PET'   => ['ddv' => 5, 'co2' => 0.11, 'agua' => 9, 'energia' => 0.18],
-    'Lata Aluminio' => ['ddv' => 8, 'co2' => 0.2, 'agua' => 8, 'energia' => 0.5],
-    'Caixa Papelao' => ['ddv' => 3, 'co2' => 0.05, 'agua' => 10, 'energia' => 0.1],
-    'Vidro'         => ['ddv' => 4, 'co2' => 0.08, 'agua' => 2, 'energia' => 0.15]
-];
-
-// ====================================================================
-// LÓGICA DE DETECÇÃO MELHORADA
-// ====================================================================
-$item_mapeado = null;
-// Procura por uma correspondência no nome do item recebido
-foreach (array_keys($recompensas_por_item) as $chave) {
-    if (stripos($item_recebido, $chave) !== false) {
-        $item_mapeado = $chave;
-        break; // Para quando encontrar a primeira correspondência
-    }
-}
-
-// Verifica se o item foi mapeado para uma de nossas chaves conhecidas
-if ($item_mapeado === null) {
-    responder(false, 'Erro: Tipo de embalagem não reconhecido pelo sistema.');
-}
-
-$recompensa = $recompensas_por_item[$item_mapeado];
-// ====================================================================
 
 try {
     $pdo->beginTransaction();
 
-    $sql = "UPDATE estatisticas_usuario SET
+    // 1. Encontra o produto no banco de dados usando o ID da IA
+    $stmt_produto = $pdo->prepare("SELECT * FROM produtos WHERE id_ia = ?");
+    $stmt_produto->execute([$id_ia_recebido]);
+    $produto = $stmt_produto->fetch();
+
+    if (!$produto) {
+        responder(false, 'Erro: Embalagem não cadastrada ou não reconhecida.');
+    }
+
+    // 2. Insere o registro na nova tabela 'descartes'
+    $stmt_descarte = $pdo->prepare("INSERT INTO descartes (usuario_id_personalizado, produto_id) VALUES (?, ?)");
+    $stmt_descarte->execute([$id_usuario, $produto['id']]);
+
+    // 3. Atualiza as estatísticas do usuário
+    $sql_update = "UPDATE estatisticas_usuario SET
                 saldo_ddv = saldo_ddv + :ddv,
                 saldo_total_acumulado = saldo_total_acumulado + :ddv,
                 itens_reciclados = itens_reciclados + 1,
@@ -62,17 +47,17 @@ try {
             WHERE
                 usuario_id_personalizado = :id_usuario";
     
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':ddv' => $recompensa['ddv'],
-        ':co2' => $recompensa['co2'],
-        ':agua' => $recompensa['agua'],
-        ':energia' => $recompensa['energia'],
+    $stmt_update_stats = $pdo->prepare($sql_update);
+    $stmt_update_stats->execute([
+        ':ddv' => $produto['pontos_ddv'],
+        ':co2' => $produto['co2_evitado'],
+        ':agua' => $produto['agua_economizada'],
+        ':energia' => $produto['energia_poupada'],
         ':id_usuario' => $id_usuario
     ]);
 
     $pdo->commit();
-    responder(true, 'Sucesso! +' . $recompensa['ddv'] . ' DDV por ' . $item_mapeado . '.');
+    responder(true, 'Sucesso! +' . $produto['pontos_ddv'] . ' DDV por ' . $produto['nome_produto'] . '.');
 
 } catch (PDOException $e) {
     $pdo->rollBack();

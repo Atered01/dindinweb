@@ -37,3 +37,93 @@ body {
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-md);
 }
+
+/* Em Dindinweb/css/painel_b2b.css (substituir o CSS do filtro anterior por este) */
+
+.filtro-dropdown {
+    position: relative;
+    margin-bottom: 2rem;
+    /* Adiciona um espaço abaixo do botão de filtros */
+}
+
+.filtro-container {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.5rem); /* Posição abaixo do botão com um pequeno espaço */
+    left: 0;
+    z-index: 10;
+    width: 100%;
+    max-width: 900px; /* Aumenta a largura máxima para acomodar mais filtros */
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    padding: 1.5rem;
+}
+
+.filtro-container.show {
+    display: block;
+}
+
+.filtro-grid {
+    display: grid;
+    /* Usa CSS Grid para o layout */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Cria colunas responsivas */
+    gap: 1.5rem 1rem; /* Espaçamento entre linhas e colunas */
+}
+
+.filtro-grid .filtro-item-largo {
+    grid-column: span 2; /* Faz o filtro de produto ocupar 2 colunas */
+}
+
+.filtro-grid div {
+    display: flex;
+    flex-direction: column;
+}
+
+.filtro-grid label {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.filtro-grid input,
+.filtro-grid select {
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: var(--color-white);
+}
+
+/* Estilização para o tema escuro (adicionado para garantir consistência) */
+body.dark-theme .filtro-grid input,
+body.dark-theme .filtro-grid select {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: var(--color-text-dark);
+}
+
+.filtro-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+    padding-top: 1.5rem;
+}
+
+.btn-limpar {
+    color: var(--color-text-light);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+}
+.btn-limpar:hover {
+    background-color: var(--color-gray-light);
+    text-decoration: none;
+}
