@@ -132,17 +132,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // 4. FUNÇÕES DE COMUNICAÇÃO COM API (ATUALIZADAS COM RATE LIMITING)
-  async function safeJsonParse(response) {
-    const text = await response.text()
-    // Verifica se é um erro PHP
+   async function safeJsonParse(response) {
+    const text = await response.text();
+    
+    // Verifica se é um erro PHP antes de tentar o parse
     if (text.includes("<b>Fatal error</b>") || text.startsWith("<br />")) {
-      throw new Error("Erro no servidor: " + text.replace(/<[^>]*>/g, "").substring(0, 200))
+      throw new Error("Erro no servidor: " + text.replace(/<[^>]*>/g, "").substring(0, 200));
     }
+
     try {
-      return JSON.parse(text)
+      // **CORREÇÃO APLICADA AQUI**
+      // Remove os blocos de código Markdown antes de fazer o parse.
+      const cleanedText = text.replace(/^```json\s*|```\s*$/g, "").trim();
+      return JSON.parse(cleanedText);
+
     } catch (e) {
-      console.error("Failed to parse JSON:", text)
-      throw new Error("Resposta inválida do servidor")
+      console.error("Failed to parse JSON:", text); // Mantém o log do texto original para debug
+      throw new Error("Resposta inválida do servidor");
     }
   }
 
@@ -206,7 +212,9 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(atualizarStatusUso, 300000)
 
   // 5. LÓGICA PRINCIPAL DO CHAT (COMPLETA COM TRATAMENTO DE RATE LIMIT)
-  async function handleFormSubmit(event) {
+  // Em Dindinweb/js/rag_panel_handler.js
+
+async function handleFormSubmit(event) {
     event.preventDefault()
     const perguntaUsuario = ELEMENTS.perguntaInput.value.trim()
     if (!perguntaUsuario) return
@@ -217,10 +225,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const loadingMessage = adicionarMensagemAssistente("Analisando sua pergunta...", true)
 
-    let respostaIA = ""
     try {
-      // Fase 1: Análise da pergunta
-      const promptInicial = `
+        // Fase 1: Análise da pergunta
+        const promptInicial = `
         Analise a pergunta do usuário.
         1. Se a pergunta for conceitual ou uma saudação que pode ser respondida com seu conhecimento base, responda em formato JSON:
          {"tipo_resposta": "direta", "conteudo": "Sua resposta aqui."}
@@ -234,41 +241,43 @@ document.addEventListener("DOMContentLoaded", () => {
         Pergunta do Usuário: "${perguntaUsuario}"
       `
 
-      respostaIA = await chamarIA(promptInicial)
-      adicionarMensagemDebug({ promptInicial, respostaBruta: respostaIA })
+        // **CORREÇÃO APLICADA AQUI**
+        // A variável 'respostaIA' agora é diretamente o objeto JSON parseado.
+        const instrucaoIA = await chamarIA(promptInicial);
+        adicionarMensagemDebug({ promptInicial, respostaBruta: instrucaoIA });
 
-      // Processamento da resposta
-      const respostaLimpa = respostaIA.replace(/```json|```/g, "").trim()
-      const instrucaoIA = JSON.parse(respostaLimpa)
+        // As linhas abaixo foram removidas pois a limpeza e o parse já ocorrem em 'safeJsonParse'.
+        // const respostaLimpa = respostaIA.replace(/```json|```/g, "").trim();
+        // const instrucaoIA = JSON.parse(respostaLimpa);
 
-      if (instrucaoIA.tipo_resposta === "sql") {
-        // Fase 2: Execução da consulta SQL
-        const consultaSQL = instrucaoIA.conteudo
-        adicionarMensagemDebug(consultaSQL)
+        if (instrucaoIA.tipo_resposta === "sql") {
+            // Fase 2: Execução da consulta SQL
+            const consultaSQL = instrucaoIA.conteudo
+            adicionarMensagemDebug(consultaSQL)
 
-        loadingMessage.innerHTML =
-          '<div class="message-loading"><span class="loader"></span><span>Consultando banco de dados...</span></div>'
+            loadingMessage.innerHTML =
+                '<div class="message-loading"><span class="loader"></span><span>Consultando banco de dados...</span></div>'
 
-        const respostaSQL = await fetch(NOSSA_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query: consultaSQL,
-            pergunta: perguntaUsuario,
-          }),
-        })
+            const respostaSQL = await fetch(NOSSA_API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    query: consultaSQL,
+                    pergunta: perguntaUsuario,
+                }),
+            })
 
-        const dadosDoBanco = await safeJsonParse(respostaSQL)
+            const dadosDoBanco = await safeJsonParse(respostaSQL)
 
-        if (!respostaSQL.ok || dadosDoBanco.erro) {
-          throw new Error(dadosDoBanco.erro || "Erro ao consultar o banco.")
-        }
+            if (!respostaSQL.ok || dadosDoBanco.erro) {
+                throw new Error(dadosDoBanco.erro || "Erro ao consultar o banco.")
+            }
 
-        // Fase 3: Geração da resposta final
-        loadingMessage.innerHTML =
-          '<div class="message-loading"><span class="loader"></span><span>Gerando resposta...</span></div>'
+            // Fase 3: Geração da resposta final
+            loadingMessage.innerHTML =
+                '<div class="message-loading"><span class="loader"></span><span>Gerando resposta...</span></div>'
 
-        const respostaFinalPrompt = `
+            const respostaFinalPrompt = `
             ${PROMPTS.sistema}
             ---
             Dados de Contexto:
@@ -283,41 +292,56 @@ document.addEventListener("DOMContentLoaded", () => {
             - Conclusão resumida no final
         `
 
-        const respostaFinal = await chamarIA(respostaFinalPrompt)
-        loadingMessage.innerHTML = DOMPurify.sanitize(marked.parse(respostaFinal))
-      } else {
-        // Resposta direta
-        loadingMessage.innerHTML = DOMPurify.sanitize(marked.parse(instrucaoIA.conteudo))
-      }
-    } catch (erro) {
-      console.error("Erro no fluxo principal:", erro)
+            // Como a resposta final da IA é puro texto, usamos .text() em vez de JSON.
+            const respostaFinalResponse = await fetch(NOSSA_API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: respostaFinalPrompt })
+            });
 
-      let msgErro = "**Ocorreu um erro**\n\n"
+            if (!respostaFinalResponse.ok) throw new Error('Erro na fase final da IA.');
 
-      if (erro instanceof RateLimitError) {
-        if (erro.message.includes("diário")) {
-          const resetTime = new Date(erro.resetTime * 1000)
-          msgErro += `Você atingiu o limite diário de ${erro.limit} requisições.\n`
-          msgErro += `O limite será resetado às ${resetTime.toLocaleTimeString()}.`
+            const respostaFinalTexto = await respostaFinalResponse.text();
+            const textoLimpo = respostaFinalTexto.replace(/```json|```/g, "").trim();
+
+            loadingMessage.innerHTML = DOMPurify.sanitize(marked.parse(textoLimpo));
+
         } else {
-          msgErro += `Por favor, aguarde ${erro.retryAfter} segundos antes de tentar novamente.`
+            // Resposta direta
+            loadingMessage.innerHTML = DOMPurify.sanitize(marked.parse(instrucaoIA.conteudo));
         }
-      } else if (erro.message.includes("Erro no servidor")) {
-        msgErro += "Problema temporário no servidor."
-      } else if (erro.name === "AbortError") {
-        msgErro += "A requisição demorou muito para responder."
-      } else if (erro instanceof SyntaxError) {
-        msgErro += "A resposta da IA não pôde ser interpretada."
-      } else {
-        msgErro += erro.message || "Por favor, tente novamente mais tarde."
-      }
 
-      loadingMessage.innerHTML = DOMPurify.sanitize(marked.parse(msgErro))
-      adicionarMensagemDebug(erro)
+    } catch (erro) {
+        // ... (o restante do bloco catch permanece o mesmo)
+        console.error("Erro no fluxo principal:", erro);
+
+        let msgErro = "**Ocorreu um erro**\n\n";
+
+        if (erro instanceof RateLimitError) {
+            if (erro.message.includes("diário")) {
+                const resetTime = new Date(erro.resetTime * 1000);
+                msgErro += `Você atingiu o limite diário de ${erro.limit} requisições.\n`;
+                msgErro += `O limite será resetado às ${resetTime.toLocaleTimeString()}.`;
+            } else {
+                msgErro += `Por favor, aguarde ${erro.retryAfter} segundos antes de tentar novamente.`;
+            }
+        } else if (erro.message.includes("Erro no servidor")) {
+            msgErro += "Problema temporário no servidor.";
+        } else if (erro.name === "AbortError") {
+            msgErro += "A requisição demorou muito para responder.";
+        } else if (erro instanceof SyntaxError) {
+            msgErro += "A resposta da IA não pôde ser interpretada.";
+        } else {
+            msgErro += erro.message || "Por favor, tente novamente mais tarde.";
+        }
+
+        loadingMessage.innerHTML = DOMPurify.sanitize(marked.parse(msgErro));
+        adicionarMensagemDebug(erro);
+
     } finally {
-      toggleSubmitButton(false)
+        toggleSubmitButton(false);
     }
-  }
+}
 
   // 6. INICIALIZAÇÃO
   function init() {

@@ -1,0 +1,16 @@
+{
+    "name": "dindinweb/dindin-project",
+    "description": "Projeto Dindinweb com integracao de IA.",
+    "require": {
+        "php": ">=8.1",
+        "gemini-api-php/client": "^1.0",
+        "vlucas/phpdotenv": "^5.6",
+        "symfony/http-client": "^7.3",
+        "nyholm/psr7": "^1.8"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}
