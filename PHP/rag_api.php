@@ -1,8 +1,9 @@
 <?php
-// Carrega a configuração e as dependências
+// Carrega a configuração, que disponibiliza a variável $pdo
 require_once 'config.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// Importa a classe necessária para a biblioteca Gemini
 use GeminiAPI\Resources\Parts\TextPart;
 
 // --- CONFIGURAÇÃO E CABEÇALHOS ---
@@ -41,10 +42,12 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 
 $prompt = $input['prompt'] ?? null;
 $sqlQuery = $input['query'] ?? null;
+$perguntaOriginal = $input['pergunta'] ?? '';
+
 
 // --- ROTEAMENTO DA REQUISIÇÃO ---
 
-// ROTA 1: Executar consulta SQL no banco de dados
+// ROTA 1: Executa uma query e retorna os dados brutos
 if ($sqlQuery) {
     try {
         $stmt = $pdo->prepare($sqlQuery);
@@ -59,7 +62,7 @@ if ($sqlQuery) {
     exit();
 }
 
-// ROTA 2: Chamar a IA
+// ROTA 2: Recebe um prompt e usa a IA
 if ($prompt) {
     try {
         $gemini_api_key = getenv('GEMINI_API_KEY');
@@ -69,22 +72,18 @@ if ($prompt) {
         
         $client = new \GeminiAPI\Client($gemini_api_key);
         $textPart = new TextPart($prompt);
-
-        // **CORREÇÃO FINAL APLICADA**
-        // Usando o nome exato do modelo da sua lista: 'gemini-1.5-flash'
-        $response = $client->generativeModel('gemini-1.5-flash')
-                           ->generateContent($textPart);
+        $response = $client->generativeModel('gemini-1.5-flash')->generateContent($textPart);
         
         echo json_encode(['conteudo' => $response->text()]);
 
     } catch (Exception $e) {
         http_response_code(500);
         error_log("Erro na chamada da IA (RAG API): " . $e->getMessage());
-        echo json_encode(['erro' => 'Erro ao se comunicar com a IA.', 'detalhes' => $e->getMessage()]);
+        echo json_encode(['erro' => 'Erro na comunicação com a IA.', 'detalhes' => $e->getMessage()]);
     }
     exit();
 }
 
-// --- RESPOSTA PARA REQUISIÇÃO INVÁLIDA ---
+// Se nenhuma rota corresponder
 http_response_code(400);
-echo json_encode(['erro' => 'Requisição inválida. Forneça um "prompt" ou uma "query".']);
+echo json_encode(['erro' => 'Requisição inválida.']);
