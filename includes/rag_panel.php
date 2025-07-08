@@ -17,7 +17,8 @@
         <span>Sugestões:</span>
         <button class="suggestion-button">Quantos usuários temos?</button>
         <button class="suggestion-button">Quais são as empresas parceiras?</button>
-        <button class="suggestion-button">Qual a recompensa mais cara?</button>
+        <button class="suggestion-button">Quais são as recompensas mais caras?</button>
+        <button class="suggestion-button">Quais são as recompenas mais resgatadas?</button>
     </div>
 
     <form id="rag-form">
@@ -30,7 +31,6 @@
 
 <script id="rag-script-loader" src="<?php echo BASE_URL; ?>/js/rag_panel_handler.js"
     data-base-url="<?php echo BASE_URL; ?>"
-    data-api-key="<?php echo htmlspecialchars($gemini_api_key ?? ''); ?>"
     data-is-admin="<?php echo (isset($_SESSION['is_admin']) && $_SESSION['is_admin']) ? '1' : '0'; ?>"
     defer>
 </script>

@@ -1,10 +1,9 @@
-// Em Dindinweb/js/rag_panel_handler.js
 document.addEventListener("DOMContentLoaded", () => {
-    // Fallbacks para bibliotecas, caso não carreguem
-    const marked = window.marked || { parse: (text) => text.replace(/</g, "&lt;").replace(/>/g, "&gt;") };
+    // Funções para sanitizar e renderizar HTML (marked e DOMPurify)
+    const marked = window.marked || { parse: (text) => String(text || '').replace(/</g, "&lt;").replace(/>/g, "&gt;") };
     const DOMPurify = window.DOMPurify || { sanitize: (html) => html };
 
-    // 1. MAPEAMENTO DOS ELEMENTOS DO HTML
+    // Mapeamento dos elementos da interface para fácil acesso
     const ELEMENTS = {
         scriptTag: document.getElementById("rag-script-loader"),
         fabTrigger: document.getElementById("rag-fab-trigger"),
@@ -18,50 +17,62 @@ document.addEventListener("DOMContentLoaded", () => {
         suggestionButtons: document.querySelectorAll(".suggestion-button"),
     };
 
-    if (!ELEMENTS.scriptTag || !ELEMENTS.fabTrigger || !ELEMENTS.ragForm) {
-        console.error("Elementos essenciais para o RAG não encontrados.");
-        return;
-    }
+    if (!ELEMENTS.scriptTag) return;
 
-    const BASE_URL = ELEMENTS.scriptTag.dataset.baseUrl;
+    // Constantes de configuração
+    const API_URL = "http://localhost:5000/rag";
     const IS_ADMIN = ELEMENTS.scriptTag.dataset.isAdmin === "1";
-    const API_URL = `${BASE_URL}/PHP/rag_api.php`;
 
-    // 2. FUNÇÕES DA INTERFACE
+    // --- Funções Auxiliares da Interface ---
+
+    /** Abre o painel de chat. */
     const openPanel = () => {
         ELEMENTS.overlay?.classList.add("active");
         ELEMENTS.sidePanel?.classList.add("active");
-        setTimeout(() => ELEMENTS.perguntaInput.focus(), 100);
+        setTimeout(() => ELEMENTS.perguntaInput.focus(), 100); // Foca no input após a animação
     };
 
+    /** Fecha o painel de chat. */
     const closePanel = () => {
         ELEMENTS.overlay?.classList.remove("active");
         ELEMENTS.sidePanel?.classList.remove("active");
     };
 
+    /** Ativa/desativa o botão de envio e mostra um ícone de carregamento. */
     const toggleSubmitButton = (disabled) => {
         if (!ELEMENTS.submitButton) return;
         ELEMENTS.submitButton.disabled = disabled;
-        const iconClass = disabled ? "fas fa-spinner fa-spin" : "fas fa-paper-plane";
-        ELEMENTS.submitButton.innerHTML = `<i class="${iconClass}"></i>`;
+        ELEMENTS.submitButton.innerHTML = `<i class="fas ${disabled ? 'fa-spinner fa-spin' : 'fa-paper-plane'}"></i>`;
     };
 
-    // 3. FUNÇÕES DE MANIPULAÇÃO DO CHAT
+    /**
+     * Adiciona uma nova mensagem à janela de chat.
+     * @param {string} texto - O conteúdo da mensagem.
+     * @param {'user' | 'assistant'} tipo - O tipo de mensagem (usuário ou assistente).
+     * @param {object} options - Opções adicionais, como { isLoading: true }.
+     * @returns {HTMLElement} O elemento da mensagem criada.
+     */
     const adicionarMensagem = (texto, tipo, { isLoading = false } = {}) => {
         const div = document.createElement("div");
         div.classList.add("chat-message", `${tipo}-message`);
+
         if (isLoading) {
+            // Mensagem de carregamento
             div.innerHTML = `<div class="message-loading"><span>${texto}</span></div>`;
         } else if (tipo === 'assistant') {
+            // Mensagem do assistente (renderiza Markdown)
             div.innerHTML = DOMPurify.sanitize(marked.parse(texto));
         } else {
+            // Mensagem do usuário (texto simples)
             div.textContent = texto;
         }
+
         ELEMENTS.chatWindow.appendChild(div);
-        ELEMENTS.chatWindow.scrollTop = ELEMENTS.chatWindow.scrollHeight;
+        ELEMENTS.chatWindow.scrollTop = ELEMENTS.chatWindow.scrollHeight; // Rola para o final
         return div;
     };
 
+    /** Adiciona uma mensagem de debug visível apenas para administradores. */
     const adicionarMensagemDebug = (obj) => {
         if (!IS_ADMIN) return;
         const texto = JSON.stringify(obj, null, 2);
@@ -70,91 +81,90 @@ document.addEventListener("DOMContentLoaded", () => {
         div.innerHTML = `<details><summary>🔧 Detalhes Técnicos (Admin)</summary><pre><code>${texto}</code></pre></details>`;
         ELEMENTS.chatWindow.appendChild(div);
     };
-    
-    // 4. FUNÇÃO DE PARSE SEGURA (COM LIMPEZA DE MARKDOWN)
-    async function safeJsonParse(text) {
-        // **CORREÇÃO APLICADA AQUI**
-        // Limpa o markdown ANTES de tentar o parse
-        const cleanedText = text.replace(/^```json\s*|```\s*$/g, "").trim();
-        try {
-            return JSON.parse(cleanedText);
-        } catch (e) {
-            console.error("Falha ao fazer parse do JSON:", cleanedText);
-            throw new Error("A resposta da IA não é um JSON válido.");
-        }
-    }
 
-    // 5. FUNÇÃO CENTRAL DE CHAMADA À API
-    async function chamarAPI(corpo) {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(corpo),
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.detalhes || `O servidor retornou um erro ${response.status}.`);
-        }
-        return response.json();
-    }
+    // --- Lógica Principal ---
 
-    // 6. LÓGICA PRINCIPAL DO CHAT
+    /**
+     * Lida com o envio do formulário de pergunta.
+     * @param {Event} event - O evento de submissão do formulário.
+     */
     async function handleFormSubmit(event) {
-        event.preventDefault();
+        event.preventDefault(); // Impede o recarregamento da página
         const perguntaUsuario = ELEMENTS.perguntaInput.value.trim();
         if (!perguntaUsuario) return;
 
+        // Adiciona a mensagem do usuário à interface e limpa o input
         adicionarMensagem(perguntaUsuario, 'user');
         ELEMENTS.perguntaInput.value = "";
         toggleSubmitButton(true);
-
-        const loadingMessage = adicionarMensagem("Analisando sua pergunta...", 'assistant', { isLoading: true });
+        const loadingMessage = adicionarMensagem("Pensando...", 'assistant', { isLoading: true });
 
         try {
-            const promptFase1 = `Analise a pergunta: "${perguntaUsuario}". Se precisar de dados do banco, gere uma consulta SQL em formato JSON {"tipo_resposta": "sql", "conteudo": "SUA QUERY AQUI"}. Caso contrário, responda diretamente em formato JSON {"tipo_resposta": "direta", "conteudo": "SUA RESPOSTA AQUI"}.`;
-            const respostaFase1 = await chamarAPI({ prompt: promptFase1 });
-            
-            // **CORREÇÃO APLICADA AQUI**
-            // Usamos a nova função safeJsonParse
-            const instrucaoIA = await safeJsonParse(respostaFase1.conteudo);
-            adicionarMensagemDebug({ fase: 1, instrucao: instrucaoIA });
+            // Envia a pergunta para a API
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: perguntaUsuario })
+            });
 
-            if (instrucaoIA.tipo_resposta === "sql") {
-                loadingMessage.querySelector('span').textContent = "Consultando banco de dados...";
-                
-                const dadosDoBanco = await chamarAPI({ query: instrucaoIA.conteudo, pergunta: perguntaUsuario });
-                if (dadosDoBanco.erro) throw new Error(dadosDoBanco.erro);
-                adicionarMensagemDebug({ fase: 2, dadosRecebidos: dadosDoBanco });
+            const resultado = await response.json();
 
-                loadingMessage.querySelector('span').textContent = "Gerando resposta final...";
-                const promptFinal = `Com base nos seguintes dados: ${JSON.stringify(dadosDoBanco.dados)}. Responda de forma amigável à pergunta: "${perguntaUsuario}"`;
-                const respostaFinal = await chamarAPI({ prompt: promptFinal });
+            // Lança um erro se a resposta da API não for bem-sucedida
+            if (!response.ok) {
+                throw new Error(resultado?.erro || `Erro de comunicação com o servidor: ${response.status}`);
+            }
 
-                loadingMessage.innerHTML = DOMPurify.sanitize(marked.parse(respostaFinal.conteudo));
+            // *** INÍCIO DA INTEGRAÇÃO ***
+            // Verifica se a resposta contém a chave 'dados'
+            if (resultado.dados) {
+                // Caso 1: A resposta é um conjunto de dados (ex: relatório)
+                // Formata os dados como um bloco de código JSON para exibição
+                const dadosFormatados = "```json\n" + JSON.stringify(resultado.dados, null, 2) + "\n```";
+                const mensagemFinal = "Consulta realizada com sucesso! Aqui estão os dados solicitados:\n\n" + dadosFormatados;
+                loadingMessage.innerHTML = DOMPurify.sanitize(marked.parse(mensagemFinal));
 
             } else {
-                loadingMessage.innerHTML = DOMPurify.sanitize(marked.parse(instrucaoIA.conteudo));
+                // Caso 2: A resposta é textual da IA
+                let mensagemFinal = resultado.resposta || "**Erro:** A resposta do assistente está vazia.";
+
+                // Adiciona informações extras, se existirem
+                if (resultado.informacao) {
+                    mensagemFinal += `\n\n*Informações adicionais: ${resultado.informacao}*`;
+                }
+                
+                loadingMessage.innerHTML = DOMPurify.sanitize(marked.parse(mensagemFinal));
+            }
+            // *** FIM DA INTEGRAÇÃO ***
+
+            // Exibe informações de debug se existirem e o usuário for admin
+            if (resultado.debug_info) {
+                adicionarMensagemDebug(resultado.debug_info);
             }
 
         } catch (erro) {
-            const mensagemErro = `**Ocorreu um erro:**\n\n${erro.message}`;
-            loadingMessage.innerHTML = DOMPurify.sanitize(marked.parse(mensagemErro));
-            adicionarMensagemDebug({ erro, stack: erro.stack });
+            // Em caso de erro, exibe uma mensagem de erro na interface
+            loadingMessage.innerHTML = DOMPurify.sanitize(marked.parse(`**Ocorreu um erro:**\n\n${erro.message}`));
+            if (IS_ADMIN) {
+                adicionarMensagemDebug({ erro: erro.message, stack: erro.stack });
+            }
         } finally {
+            // Reativa o botão de envio, independentemente do resultado
             toggleSubmitButton(false);
         }
     }
 
-    // 7. INICIALIZAÇÃO DOS EVENTOS
-    ELEMENTS.fabTrigger.addEventListener("click", (e) => { e.preventDefault(); openPanel(); });
+    // --- Configuração dos Event Listeners ---
+
+    ELEMENTS.fabTrigger?.addEventListener("click", (e) => { e.preventDefault(); openPanel(); });
     ELEMENTS.closeButton?.addEventListener("click", closePanel);
     ELEMENTS.overlay?.addEventListener("click", closePanel);
-    ELEMENTS.ragForm.addEventListener("submit", handleFormSubmit);
+    ELEMENTS.ragForm?.addEventListener("submit", handleFormSubmit);
+
+    // Adiciona funcionalidade aos botões de sugestão
     ELEMENTS.suggestionButtons.forEach(button => {
-        button.addEventListener("click", function() {
+        button.addEventListener("click", function () {
             ELEMENTS.perguntaInput.value = this.textContent;
-            ELEMENTS.ragForm.dispatchEvent(new Event("submit", { bubbles: true }));
+            ELEMENTS.ragForm.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
         });
     });
 });

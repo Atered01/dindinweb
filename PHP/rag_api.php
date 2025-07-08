@@ -1,89 +1,100 @@
 <?php
-// Carrega a configuração, que disponibiliza a variável $pdo
+// Arquivo: rag_api.php
 require_once 'config.php';
-require_once __DIR__ . '/../vendor/autoload.php';
 
-// Importa a classe necessária para a biblioteca Gemini
-use GeminiAPI\Resources\Parts\TextPart;
-
-// --- CONFIGURAÇÃO E CABEÇALHOS ---
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: ' . ($_SERVER['HTTP_ORIGIN'] ?? '*'));
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
-// --- HANDLER PARA REQUISIÇÕES OPTIONS (CORS) ---
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
     exit();
 }
 
-// --- INICIALIZAÇÃO E SEGURANÇA ---
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 date_default_timezone_set('America/Sao_Paulo');
 
-// Verificação de autenticação
 if (!isset($_SESSION['is_admin']) && !isset($_SESSION['empresa_id'])) {
     http_response_code(403);
-    echo json_encode(['erro' => 'Acesso negado. Faça o login para continuar.']);
+    echo json_encode(['erro' => 'Acesso negado. Faça o login.']);
     exit();
 }
 
-// --- DECODIFICAÇÃO DA REQUISIÇÃO ---
 $input = json_decode(file_get_contents('php://input'), true);
-if (json_last_error() !== JSON_ERROR_NONE) {
-    http_response_code(400);
-    echo json_encode(['erro' => 'JSON inválido no corpo da requisição.']);
-    exit();
-}
-
 $prompt = $input['prompt'] ?? null;
-$sqlQuery = $input['query'] ?? null;
-$perguntaOriginal = $input['pergunta'] ?? '';
+$modelName = 'mistral:instruct';
 
+function chamarOllamaAPI($prompt, $model) {
+    $url = 'http://127.0.0.1:11434/api/generate';
+    $data = [
+        'model' => $model,
+        'prompt' => $prompt,
+        'stream' => false
+    ];
 
-// --- ROTEAMENTO DA REQUISIÇÃO ---
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+    $response = curl_exec($ch);
 
-// ROTA 1: Executa uma query e retorna os dados brutos
-if ($sqlQuery) {
-    try {
-        $stmt = $pdo->prepare($sqlQuery);
-        $stmt->execute();
-        $dados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode(['dados' => $dados]);
-    } catch (PDOException $e) {
-        http_response_code(500);
-        error_log("Erro no banco de dados (RAG API): " . $e->getMessage());
-        echo json_encode(['erro' => 'Erro ao consultar o banco de dados.']);
+    if (curl_errno($ch)) {
+        throw new Exception("Erro cURL: " . curl_error($ch));
     }
-    exit();
+    curl_close($ch);
+
+    $parsed = json_decode($response, true);
+    return $parsed['response'] ?? '';
 }
 
-// ROTA 2: Recebe um prompt e usa a IA
+function extrairSqlDeTexto($texto) {
+    if (preg_match('/```sql(.*?)```/is', $texto, $m)) {
+        return trim($m[1]);
+    }
+    if (preg_match('/^(SELECT|INSERT|UPDATE|DELETE).*?;/ims', $texto, $m)) {
+        return trim($m[0]);
+    }
+    return null;
+}
+
 if ($prompt) {
     try {
-        $gemini_api_key = getenv('GEMINI_API_KEY');
-        if (!$gemini_api_key) {
-            throw new Exception("Chave da API não configurada no servidor.");
-        }
-        
-        $client = new \GeminiAPI\Client($gemini_api_key);
-        $textPart = new TextPart($prompt);
-        $response = $client->generativeModel('gemini-1.5-flash')->generateContent($textPart);
-        
-        echo json_encode(['conteudo' => $response->text()]);
+        $respostaIA = chamarOllamaAPI($prompt, $modelName);
+        $sqlQuery = extrairSqlDeTexto($respostaIA);
 
+        if ($sqlQuery) {
+            $stmt = $pdo->prepare($sqlQuery);
+            $stmt->execute();
+            $dados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+
+            echo json_encode([
+                'resposta' => "Consulta realizada com sucesso:",
+                'dados' => $dados,
+                'debug_info' => ['sqlGerado' => $sqlQuery]
+            ]);
+        } else {
+            echo json_encode([
+                'resposta' => $respostaIA,
+                'debug_info' => ['observacao' => 'Nenhuma consulta SQL extraída.']
+            ]);
+        }
     } catch (Exception $e) {
         http_response_code(500);
-        error_log("Erro na chamada da IA (RAG API): " . $e->getMessage());
-        echo json_encode(['erro' => 'Erro na comunicação com a IA.', 'detalhes' => $e->getMessage()]);
+        echo json_encode([
+            'erro' => 'Erro ao executar a requisição.',
+            'detalhes' => $e->getMessage(),
+        ]);
     }
     exit();
 }
 
-// Se nenhuma rota corresponder
 http_response_code(400);
 echo json_encode(['erro' => 'Requisição inválida.']);
